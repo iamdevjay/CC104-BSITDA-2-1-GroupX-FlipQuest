@@ -1,0 +1,1214 @@
+/* ==========================================================
+   1. PAGE SETTINGS
+========================================================== */
+
+:root {
+    --dark: #02111c;
+    --panel: #071d2d;
+    --white: #eff8ff;
+    --cyan: #11deef;
+    --lime: #b7fa36;
+    --pink: #fa4b9f;
+    --green: #00b86e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    color: var(--white);
+    background: #02111c;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button, input, label {
+
+    font: inherit;
+
+}
+button {
+
+    cursor: pointer;
+
+}
+button:focus-visible, label:focus-visible, input:focus-visible + label {
+    outline: 2px solid white;
+    outline-offset: 4px;
+}
+
+
+/* ==========================================================
+   2. THREE-COLUMN GAME LAYOUT AND BACKGROUND
+========================================================== */
+
+.game-container {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(305px, 22%) minmax(0, 1fr) minmax(270px, 20%);
+    column-gap: 24px;
+    min-height: 100vh;
+    isolation: isolate;
+    background: #02111c url('../assets/images/topographic-background.svg') center / cover no-repeat;
+    --level-accent: #b7fa36;
+    --level-button-start: #035e31;
+    --level-button-end: #00492a;
+    --level-button-glow: rgba(139,247,62,.20);
+    --card-start: #006b3e;
+    --card-mid: #00512e;
+    --card-end: #003923;
+    --card-glow: rgba(0,255,177,.18);
+    --play-start: #d0fbff;
+    --play-end: #74e7fb;
+    --play-border: #bffbff;
+}
+
+.game-container:has(#medium:checked) {
+    --level-accent: #4ddcff;
+    --level-button-start: #075b83;
+    --level-button-end: #07375c;
+    --level-button-glow: rgba(42,193,255,.28);
+    --card-start: #07527d;
+    --card-mid: #073d68;
+    --card-end: #092749;
+    --card-glow: rgba(36,183,255,.30);
+    --play-start: #a4efff;
+    --play-end: #48bde8;
+    --play-border: #7ee4ff;
+}
+
+.game-container:has(#hard:checked) {
+    --level-accent: #ff5b83;
+    --level-button-start: #8c1f46;
+    --level-button-end: #52152f;
+    --level-button-glow: rgba(255,57,105,.32);
+    --card-start: #76203e;
+    --card-mid: #50172f;
+    --card-end: #301425;
+    --card-glow: rgba(255,47,105,.35);
+    --play-start: #ff9aab;
+    --play-end: #ec456e;
+    --play-border: #ff7896;
+}
+
+
+
+
+/* ==========================================================
+   3. LEFT SIDEBAR WITH ANGLED NEON BORDER
+========================================================== */
+
+.left-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 48px 46px 72px;
+    isolation: isolate;
+    min-width: 0;
+}
+
+.left-panel::before,
+.left-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(9% 0, 88% 0, 100% 4%, 100% 97%, 91% 100%, 0 100%, 0 4%);
+    pointer-events: none;
+}
+
+.left-panel::before {
+    z-index: -2;
+    background: linear-gradient(150deg, #12f0ec, #04baf0 46%, #1a7796 80%, #16ed8f);
+    filter: drop-shadow(0 0 10px rgba(0,255,226,.4));
+}
+
+.left-panel::after {
+    inset: 2px;
+    z-index: -1;
+    background:
+        linear-gradient(140deg, rgba(0,204,242,.08), transparent 34%),
+        radial-gradient(ellipse at 0 100%, rgba(8,177,191,.20), transparent 40%),
+        linear-gradient(160deg, #09283b, #031624 70%, #073342);
+}
+
+/* Neon stripes beside the sidebar heading */
+.left-panel .difficulty-section::before {
+    content: '';
+    display: block;
+    width: 90%;
+    height: 1px;
+    margin: 0 auto 25px;
+    background: linear-gradient(90deg, transparent, #2c96b9, transparent);
+}
+
+
+
+
+/* ==========================================================
+   4. FLIPQUEST LOGO
+========================================================== */
+
+.game-logo {
+    text-align: center;
+    width: 100%;
+}
+
+.logo-cards {
+    position: relative;
+    width: 165px;
+    height: 138px;
+    margin: 0 auto;
+}
+
+.logo-card {
+    position: absolute;
+    top: 6px;
+    display: grid;
+    place-items: center;
+    width: 100px;
+    height: 112px;
+    border: 3px solid #dff6ff;
+    border-radius: 13px;
+    background: linear-gradient(155deg, #0b2535, #03121e);
+    box-shadow: 0 0 8px rgba(0,238,247,.16);
+}
+
+.logo-card.card-one {
+    left: 13px;
+    transform: rotate(-15deg);
+}
+
+.logo-card.card-two {
+    right: 5px;
+    transform: rotate(13deg);
+    font-size: 55px;
+    font-weight: bold;
+    text-shadow: 0 0 9px rgba(255,255,255,.2);
+    border-right-color: #06f8f4;
+}
+
+.game-logo h1 {
+    font-size: clamp(34px, 3.4vw, 51px);
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: -2.5px;
+    line-height: 1.03;
+    text-shadow: 0 2px 10px rgba(0,0,0,.6);
+}
+
+.game-logo h1 span {
+
+    color: #13def3;
+
+}
+.game-logo p {
+    font-size: 12px;
+    font-weight: 700;
+    color: #adc5d5;
+    letter-spacing: 3px;
+    margin-top: 20px;
+    white-space: nowrap;
+}
+
+
+
+
+/* ==========================================================
+   5. PLAYER LABEL
+========================================================== */
+
+.player-box {
+    width: 88%;
+    margin-top: 33px;
+    padding: 15px 10px;
+    text-align: center;
+    border: 2px solid #5989a5;
+    border-radius: 12px;
+    background: linear-gradient(120deg, #091f2f, #031524);
+    font-weight: 800;
+    font-size: 18px;
+    box-shadow: 0 6px 14px rgba(0,0,0,.18);
+}
+
+
+
+
+/* ==========================================================
+   6. DIFFICULTY BUTTONS
+========================================================== */
+
+.difficulty-section {
+    width: 100%;
+    margin-top: 26px;
+    text-align: center;
+}
+
+.difficulty-section h2 {
+    font-size: 17px;
+    margin-bottom: 30px;
+    font-weight: 800;
+}
+
+.difficulty-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.difficulty-buttons input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.difficulty-button {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 65px;
+    border: 2px solid #638ca6;
+    border-radius: 12px;
+    color: #f3faff;
+    background: linear-gradient(140deg, #092132, #031522);
+    font-size: 21px;
+    font-weight: 800;
+    box-shadow: 0 8px 15px rgba(0,0,0,.24);
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s;
+}
+
+.difficulty-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(12,223,255,.26);
+}
+
+.difficulty-buttons input:checked + .difficulty-button {
+    border-color: var(--level-accent);
+    color: #f4fff8;
+    background: linear-gradient(var(--level-button-start), var(--level-button-end));
+    box-shadow: 0 0 0 1px var(--level-button-glow), 0 0 13px var(--level-button-glow);
+}
+
+
+
+
+/* ==========================================================
+   7. PLAY BUTTON
+========================================================== */
+
+.play-button {
+    width: 100%;
+    min-height: 82px;
+    margin-top: 28px;
+    color: #031c2c;
+    font-size: 30px;
+    font-weight: 900;
+    background: linear-gradient(125deg, var(--play-start), var(--play-end));
+    border: 3px solid var(--play-border);
+    border-radius: 12px;
+    clip-path: polygon(6% 0, 95% 0, 100% 19%, 100% 80%, 94% 100%, 0 100%, 0 14%);
+    box-shadow: inset 0 -9px 12px rgba(24,119,141,.1);
+    transition: filter .15s;
+}
+
+.play-button:hover {
+
+    filter: brightness(1.17);
+
+}
+/* ==========================================================
+   8. MIDDLE PANEL
+========================================================== */
+
+.middle-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    padding: 38px 0 24px;
+    gap: 27px;
+}
+
+
+
+
+/* ==========================================================
+   9. TIME / MOVES / COMBO DISPLAY
+========================================================== */
+
+.game-stats {
+    width: 100%;
+    max-width: 865px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.stat-box {
+    position: relative;
+    min-width: 0;
+    min-height: 95px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 17px;
+    isolation: isolate;
+    background: linear-gradient(130deg, #092839, #041523);
+    border: 2px solid #6795ac;
+    border-radius: 17px;
+    box-shadow: 0 8px 13px rgba(0,0,0,.32), inset 0 0 12px rgba(0,255,255,.03);
+}
+
+.stat-box:nth-child(1) {
+
+    border-bottom-color: #13dce9;
+
+}
+.stat-box:nth-child(2) {
+    border-bottom-color: #51d9ea;
+}
+.stat-box:nth-child(3) {
+    border-bottom-color: #e2449e;
+}
+.stat-box::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 31px;
+    height: 19px;
+    background: #08d9f1;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    opacity: .95;
+}
+
+.stat-box:nth-child(2)::after {
+
+    background: #d7ffff;
+
+}
+.stat-box:nth-child(3)::after {
+    background: #f75ea2;
+}
+.stat-icon {
+
+    font-size: 42px;
+
+    font-weight: 900;
+
+    line-height: 1;
+
+}
+.stat-icon.time-icon {
+    color: #1cdef4;
+}
+.stat-icon.moves-icon {
+    color: #beff3a;
+}
+.stat-icon.combo-icon {
+    color: #ff6fa9;
+}
+.stat-info {
+
+    text-align: center;
+
+}
+.stat-info p {
+    color: #b0c8d7;
+    font-size: 17px;
+    font-weight: 800;
+}
+.stat-info h2 {
+    color: #fff;
+    font-size: 31px;
+    font-weight: 900;
+    line-height: 1.18;
+    margin-top: 2px;
+}
+/* ==========================================================
+   10. MAIN BOARD WITH ANGLED CORNERS
+========================================================== */
+
+.board-container {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 855px;
+    padding: 39px 48px;
+    background: transparent;
+    min-width: 0;
+}
+
+.board-container::before,
+.board-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(5% 0, 94% 0, 100% 6%, 100% 94%, 95% 100%, 4% 100%, 0 95%, 0 6%);
+    pointer-events: none;
+}
+
+.board-container::before {
+    z-index: -2;
+    background: linear-gradient(115deg, #27e3fa, #0b728b 45%, #10c7f5 65%, #2abff6);
+    filter: drop-shadow(0 0 9px rgba(8,217,248,.37));
+}
+
+.board-container::after {
+    inset: 6px;
+    z-index: -1;
+    background: linear-gradient(145deg, #001a20, #00111e 60%, #001724);
+}
+
+
+
+
+/* ==========================================================
+   11. CARD GRID (4 x 2 EASY / 6 x 3 MEDIUM / 6 x 4 HARD)
+========================================================== */
+
+.card-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    justify-content: center;
+    gap: 19px 26px;
+}
+
+
+
+
+/* ==========================================================
+   12. MEMORY CARDS
+========================================================== */
+
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1 / 1.02;
+    min-width: 0;
+    padding: 0;
+    color: #dceef6;
+    font-size: clamp(40px, 3.8vw, 65px);
+    font-weight: 900;
+    line-height: 1;
+    border: 2px solid var(--level-accent);
+    border-radius: 21px;
+    background: linear-gradient(140deg, var(--card-start) 0%, var(--card-mid) 55%, var(--card-end) 100%);
+    box-shadow: 0 3px 0 #00161b, 0 0 10px var(--card-glow), inset 0 3px 9px rgba(12,218,126,.05);
+    transition: transform .16s, box-shadow .16s, background .16s, border-color .16s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 0 #00161b, 0 0 17px var(--card-glow);
+}
+
+.card-back {
+
+    display: inline;
+
+}
+.card-front {
+    display: none;
+}
+.card.is-flipped .card-back,
+.card.is-matched .card-back {
+    display: none;
+}
+.card.is-flipped .card-front,
+.card.is-matched .card-front {
+    display: inline;
+}
+.card.is-flipped {
+
+    background: #d6fafb;
+
+    color: #0a2c36;
+
+}
+.card.is-matched {
+    background: #14503d;
+    border-color: #c1ff58;
+}
+.card.is-hinted {
+    outline: 3px solid #f3ff58;
+    outline-offset: 3px;
+}
+.extra-card,
+.hard-card {
+    display: none;
+}
+
+.game-container:has(#medium:checked) .card-grid,
+.game-container:has(#hard:checked) .card-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.game-container:has(#medium:checked) .extra-card,
+.game-container:has(#hard:checked) .extra-card {
+    display: flex;
+}
+
+.game-container:has(#hard:checked) .hard-card {
+    display: flex;
+}
+
+.game-container:has(#medium:checked) .card,
+.game-container:has(#hard:checked) .card {
+    aspect-ratio: 1 / 1.20;
+    font-size: 45px;
+}
+/* ==========================================================
+   13. MATCHED PAIRS
+========================================================== */
+
+.matched-box {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 17px;
+    width: min(425px, 92%);
+    min-height: 69px;
+    padding: 9px 20px;
+    background: #041b2a;
+    border: 2px solid #19dbe8;
+    border-radius: 11px;
+    box-shadow: 0 7px 13px rgba(0,0,0,.38);
+}
+
+.matched-box::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 22px;
+    height: 16px;
+    background: #00d5ec;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.matched-icon {
+
+    font-size: 34px;
+
+    line-height: 1;
+
+    color: #b8ff2d;
+
+    font-weight: bold;
+
+}
+.matched-box p {
+    font-size: 19px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+#game-message {
+    color: #a7cbd4;
+    font-size: 12px;
+    text-align: center;
+    margin-top: -22px;
+}
+/* ==========================================================
+   14. RIGHT PANEL
+========================================================== */
+
+.right-panel {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 38px 34px 36px 0;
+    gap: 0;
+}
+
+
+
+
+/* ==========================================================
+   15. SOUND AND SETTINGS
+========================================================== */
+
+.top-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 13px;
+}
+
+.small-button {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    color: #f1f8fe;
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #0c2940, #031522);
+    border: 2px solid #278eaa;
+    border-radius: 14px;
+    box-shadow: 0 5px 12px rgba(0,0,0,.3);
+}
+
+.small-button:hover {
+
+    border-color: #64f9ff;
+
+}
+/* ==========================================================
+   16. TIMER LIMIT PANEL
+========================================================== */
+
+.timer-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    min-height: 144px;
+    margin-top: 91px;
+    padding: 18px;
+    border-radius: 17px;
+    border: 2px solid #318ba7;
+    background: linear-gradient(135deg, #0b2c40, #031323);
+    box-shadow: 0 9px 17px rgba(0,0,0,.34);
+}
+
+.timer-icon {
+
+    font-size: 58px;
+
+    line-height: 1;
+
+    color: #0cdbfa;
+
+}
+.timer-info {
+    text-align: center;
+}
+.timer-info p {
+    font-size: 23px;
+    font-weight: 800;
+    color: #adbecd;
+}
+.timer-info h2 {
+    font-size: 62px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #f2f9ff;
+}
+/* ==========================================================
+   17. FREEZE / HINT / PEEK
+========================================================== */
+
+.power-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    margin-top: 50px;
+}
+
+.power-button {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    min-height: 100px;
+    padding: 14px 17px;
+    border-radius: 17px;
+    border: 2px solid #458aa7;
+    background: linear-gradient(120deg, #0a2b3d, #031623);
+    color: white;
+    box-shadow: 0 8px 16px rgba(0,0,0,.38);
+}
+
+.power-button::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 30px;
+    height: 21px;
+    background: #f35d9d;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.power-button:hover {
+
+    border-color: #21e2e8;
+
+    background: #10394a;
+
+}
+.power-icon {
+    font-size: 46px;
+    line-height: 1;
+    font-weight: bold;
+}
+.freeze-icon {
+    color: #19e0ed;
+}
+.hint-icon {
+    color: #caff32;
+}
+.peek-icon {
+    color: #ff77b1;
+}
+.power-info {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 5px;
+}
+.power-info strong {
+    font-size: 20px;
+}
+.power-info small {
+    color: #ff548d;
+    font-size: 17px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+/* ==========================================================
+   18. SUPPORT BUTTON
+========================================================== */
+
+.support-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 68px;
+    padding: 10px;
+    margin-top: auto;
+    border: 2px solid #4391a9;
+    border-radius: 12px;
+    color: white;
+    background: #061d2a;
+    font-size: 18px;
+    white-space: nowrap;
+    box-shadow: 0 6px 14px rgba(0,0,0,.3);
+}
+
+.support-button span {
+
+    font-size: 34px;
+
+    color: #ff79ad;
+
+    line-height: 1;
+
+}
+.support-button:hover {
+    border-color: #36edcd;
+}
+/* ==========================================================
+   19. RESPONSIVE LAYOUT - SMALLER DESKTOPS, TABLETS, MOBILE
+========================================================== */
+
+@media (max-width: 1450px) {
+    .game-container {
+        grid-template-columns: 275px minmax(0, 1fr) 250px;
+        gap: 16px;
+    }
+    .left-panel {
+        padding: 32px 24px 46px;
+    }
+    .logo-cards {
+        transform: scale(.83);
+        transform-origin: center top;
+        height: 110px;
+    }
+    .game-logo h1 {
+        font-size: 38px;
+    }
+    .game-logo p {
+        letter-spacing: 2px;
+        font-size: 11px;
+    }
+    .difficulty-button {
+        min-height: 50px;
+        font-size: 17px;
+    }
+    .player-box {
+        margin-top: 20px;
+        padding: 10px;
+    }
+    .difficulty-section {
+        margin-top: 20px;
+    }
+    .difficulty-section h2 {
+        margin-bottom: 18px;
+    }
+    .play-button {
+        min-height: 62px;
+        font-size: 25px;
+        margin-top: 22px;
+    }
+    .middle-panel {
+        padding-top: 24px;
+        gap: 17px;
+    }
+    .stat-box {
+        min-height: 75px;
+        gap: 9px;
+    }
+    .stat-icon {
+        font-size: 30px;
+    }
+    .stat-info p {
+        font-size: 13px;
+    }
+    .stat-info h2 {
+        font-size: 24px;
+    }
+    .board-container {
+        padding: 28px 27px;
+    }
+    .card-grid {
+        grid-template-columns: repeat(4, minmax(0, 148px));
+        justify-content: center;
+        gap: 13px 15px;
+    }
+    .card {
+        border-radius: 14px;
+        font-size: 38px;
+    }
+    .game-container:has(#medium:checked) .card-grid,
+    .game-container:has(#hard:checked) .card-grid {
+        grid-template-columns: repeat(6, minmax(0, 108px));
+        justify-content: center;
+    }
+    .matched-box {
+        min-height: 52px;
+    }
+    .matched-box p {
+        font-size: 14px;
+    }
+    .right-panel {
+        padding: 24px 14px 24px 0;
+    }
+    .small-button {
+        width: 47px;
+        height: 47px;
+        font-size: 26px;
+    }
+    .timer-box {
+        margin-top: 48px;
+        min-height: 96px;
+        gap: 11px;
+    }
+    .timer-icon {
+        font-size: 38px;
+    }
+    .timer-info p {
+        font-size: 18px;
+    }
+    .timer-info h2 {
+        font-size: 43px;
+    }
+    .power-buttons {
+        margin-top: 26px;
+        gap: 15px;
+    }
+    .power-button {
+        min-height: 70px;
+        gap: 9px;
+        padding: 10px;
+    }
+    .power-icon {
+        font-size: 30px;
+    }
+    .power-info strong {
+        font-size: 17px;
+    }
+    .power-info small {
+        font-size: 13px;
+    }
+    .support-button {
+        min-height: 52px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 950px) {
+    .game-container {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+    .left-panel {
+        min-height: 430px;
+        padding: 25px 25px;
+    }
+    .left-panel::before, .left-panel::after {
+        clip-path: none;
+    }
+    .difficulty-section {
+        max-width: 400px;
+    }
+    .difficulty-buttons {
+        flex-direction: row;
+    }
+    .difficulty-button {
+        min-width: 95px;
+        padding: 0 12px;
+    }
+    .play-button {
+        max-width: 400px;
+        margin-top: 20px;
+    }
+    .middle-panel {
+        padding: 25px 18px;
+    }
+    .board-container {
+        max-width: 730px;
+    }
+    .right-panel {
+        padding: 20px 22px 40px;
+        gap: 22px;
+    }
+    .timer-box, .power-buttons {
+        margin-top: 0;
+    }
+    .top-buttons {
+        justify-content: center;
+    }
+    .support-button {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 550px) {
+    .game-stats {
+        gap: 6px;
+    }
+    .stat-box {
+        flex-direction: column;
+        gap: 3px;
+        padding: 5px;
+        min-height: 69px;
+    }
+    .stat-icon {
+        display: none;
+    }
+    .stat-info h2 {
+        font-size: 20px;
+    }
+    .board-container {
+        padding: 20px 12px;
+    }
+    .card-grid {
+        gap: 8px;
+    }
+    .card {
+        border-radius: 9px;
+        font-size: 27px;
+    }
+    .game-container:has(#medium:checked) .card-grid,
+    .game-container:has(#hard:checked) .card-grid {
+        gap: 5px;
+    }
+    .game-container:has(#medium:checked) .card,
+    .game-container:has(#hard:checked) .card {
+        font-size: 22px;
+        border-radius: 6px;
+    }
+}
+
+
+
+
+/* ==========================================================
+   20. SHORTER DESKTOP WINDOWS - KEEP PLAY VISIBLE
+
+   This helps when Chrome is not in full-screen mode.
+   The Play button stays under the difficulty choices,
+   rather than being pushed to the bottom of the sidebar.
+========================================================== */
+
+@media (min-width: 951px) and (max-height: 850px) {
+
+    .left-panel {
+        padding: 20px 24px 25px;
+    }
+
+    .logo-cards {
+        height: 99px;
+        transform: scale(0.73);
+        transform-origin: center top;
+    }
+
+    .game-logo h1 {
+        font-size: 34px;
+    }
+
+    .game-logo p {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        margin-top: 10px;
+    }
+
+    .player-box {
+        margin-top: 14px;
+        padding: 9px;
+        font-size: 15px;
+    }
+
+    .difficulty-section {
+        margin-top: 12px;
+    }
+
+    .difficulty-section h2 {
+        margin-bottom: 14px;
+        font-size: 15px;
+    }
+
+    .difficulty-buttons {
+        gap: 10px;
+    }
+
+    .difficulty-button {
+        min-height: 45px;
+        font-size: 17px;
+    }
+
+    .play-button {
+        margin-top: 20px;
+        min-height: 58px;
+        font-size: 24px;
+    }
+
+}
+
+
+
+/* ==========================================
+   21. COMPACT DESKTOP SCREEN
+========================================== */
+
+@media (min-width: 951px) and (max-height: 900px) {
+
+    /* Main game layout */
+
+    .game-container {
+        min-height: 100vh;
+    }
+
+
+    /* Left panel */
+
+    .left-panel {
+        padding-top: 18px;
+        padding-bottom: 18px;
+        gap: 12px;
+    }
+
+    .logo-cards {
+        height: 95px;
+    }
+
+    .logo-card {
+        width: 65px;
+        height: 80px;
+    }
+
+    .game-logo h1 {
+        font-size: 34px;
+    }
+
+    .difficulty-buttons {
+        gap: 10px;
+    }
+
+    .difficulty-button {
+        padding: 11px;
+    }
+
+    .play-button {
+        min-height: 55px;
+        padding: 12px;
+        margin-top: 10px;
+    }
+
+
+    /* Middle panel */
+
+    .middle-panel {
+        padding-top: 18px;
+        padding-bottom: 12px;
+        gap: 12px;
+    }
+
+    .stat-box {
+        min-height: 70px;
+    }
+
+    .board-container {
+        padding: 15px;
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(4, minmax(0, 125px));
+        gap: 12px;
+    }
+
+    .card {
+        aspect-ratio: 1 / 1;
+        font-size: 40px;
+    }
+
+    .matched-box {
+        padding: 10px;
+    }
+
+
+    /* Right panel */
+
+    .right-panel {
+        padding-top: 18px;
+        padding-bottom: 12px;
+        gap: 14px;
+    }
+
+    .top-buttons {
+        margin-bottom: 5px;
+    }
+
+    .timer-box {
+        min-height: 105px;
+        padding: 12px;
+    }
+
+    .power-buttons {
+        gap: 12px;
+        margin-top: 5px;
+    }
+
+    .power-button {
+        min-height: 70px;
+        padding: 10px;
+    }
+
+    .support-button {
+        padding: 12px;
+    }
+
+}
