@@ -109,8 +109,6 @@ function flipCardDown(card)
 
 
 
-
-
 $("#play-button").on("click", function () {
   // hanapiin yung game mode dto
 
