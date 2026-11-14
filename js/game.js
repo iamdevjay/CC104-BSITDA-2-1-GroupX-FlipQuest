@@ -84,7 +84,8 @@ function findCard(cardName)
 }
 
 //to flip cards  up
-function flipCardUp(card) {
+function flipCardUp(card) 
+{
   card.flipped = true;
 
   $("#" + card.name)
@@ -95,7 +96,8 @@ function flipCardUp(card) {
 
 
 // unflip cards down
-function flipCardDown(card) {
+function flipCardDown(card) 
+{
   card.flipped = false;
 
   $("#" + card.name)
@@ -108,10 +110,9 @@ function flipCardDown(card) {
 
 
 
- $( document ).ready(function() 
-{
+
 $("#play-button").on("click", function () {
-  setGameMode();
+  // hanapiin yung game mode dto
 
   // Reset the game for the selected mode.
   correct = 0;
