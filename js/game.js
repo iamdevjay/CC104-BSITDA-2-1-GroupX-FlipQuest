@@ -12,6 +12,7 @@ var correctPairs = [
   [21, 22], [22, 21],
   [23, 24], [24, 23]
 ];
+// ohh yeah pede palitan yung value for image location to display
 var cards = [
   { name: "card1", value: 1, flipped: false },
   { name: "card2", value: 2, flipped: false },
@@ -68,7 +69,7 @@ function isPair(firstNumber, secondNumber)
   return false;
 }
 
-//look for card locarion
+//look for card locarion int the cards array kung gamit ng html id
 function findCard(cardName) 
 {
   for (var i = 0; i < cards.length; i++) 
@@ -81,4 +82,45 @@ function findCard(cardName)
 
   return null;
 }
- 
+
+//to flip cards  up
+function flipCardUp(card) 
+{
+  card.flipped = true;
+
+  $("#" + card.name)
+    .addClass("is-flipped")
+    .find(".card-front")
+    //.text(card.value);
+}
+
+
+// unflip cards down
+function flipCardDown(card) 
+{
+  card.flipped = false;
+
+  $("#" + card.name)
+    .removeClass("is-flipped")
+    .find(".card-front")
+    //.text("");
+}
+
+
+
+
+$("#play-button").on("click", function () {
+  // hanapiin yung game mode dto
+
+  // Reset the game for the selected mode.
+  correct = 0;
+  fail = 0;
+  firstCard = null;
+  matchedCards = [];
+  canClick = true;
+
+  $("#matched-pairs").text("0");
+  $("#game-message").text("Find all the matching pairs!");
+
+
+});

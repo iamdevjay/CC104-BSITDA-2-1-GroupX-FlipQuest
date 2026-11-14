@@ -12,7 +12,7 @@ TO USE WITH YOUR EXISTING FLIPQUEST FOLDER:
    index.html as a visual reference, but confirm with your teammates first.
 5. Open index.html in Chrome and refresh with Ctrl+Shift+R.
 
-Do NOT overwrite your teammates' js/game.js or js/ui.js.
+
 
 KEY IDS TO KEEP CONSISTENT WITH YOUR TEAM:
 - easy, medium, hard (difficulty radio buttons)
