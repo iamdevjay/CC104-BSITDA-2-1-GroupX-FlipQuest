@@ -1,313 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlipQuest - Memory Matching Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+<div class="game-container">
 
-    <div class="game-container">
-
-
-        <!-- 1. LEFT PANEL - LOGO, DIFFICULTY, AND PLAY -->
-
-        <div class="left-panel">
-
-            <!-- Game logo -->
-            <div class="game-logo">
-                <div class="logo-cards" aria-hidden="true">
-                    <span class="logo-card card-one"></span>
-                    <span class="logo-card card-two">?</span>
-                </div>
-
-                <h1>Flip<span>Quest</span></h1>
-                <p>MEMORY MATCHING GAME</p>
-            </div>
-
-
-            <!-- Player label -->
-            <div class="player-box">1 PLAYER</div>
-
-
-            <!-- Difficulty options -->
-            <div class="difficulty-section">
-                <h2>SELECT DIFFICULTY</h2>
-
-                <div class="difficulty-buttons">
-                    <input type="radio" id="easy" name="difficulty" value="easy" checked>
-                    <label for="easy" class="difficulty-button">Easy</label>
-
-                    <input type="radio" id="medium" name="difficulty" value="medium">
-                    <label for="medium" class="difficulty-button">Medium</label>
-
-                    <input type="radio" id="hard" name="difficulty" value="hard">
-                    <label for="hard" class="difficulty-button">Hard</label>
-                </div>
-            </div>
-
-
-            <!-- Start the game -->
-            <button type="button" id="play-button" class="play-button">PLAY</button>
-
+    <!-- ========== TOP BAR: logo + sound/settings ========== -->
+    <header class="top-bar">
+        <div class="game-logo">
+            <h1>FlipQuest</h1>i
+            <p>Flip two cards, find the match.</p>
         </div>
 
+        <div class="top-buttons">
+            <button class="small-button" id="sound-button" type="button" aria-label="Sound">♫</button>
+            <button class="small-button" id="settings-button" type="button" aria-label="Settings">⚙</button>
+        </div>
+    </header>
 
 
+    <!-- ========== SCREEN: scoreboard, cards, progress ========== -->
+    <main class="middle-panel">
 
-        <!-- 2. MIDDLE PANEL - STATISTICS, CARD GRID, AND PROGRESS -->
+        <section class="game-stats" aria-label="Scoreboard">
+            <div class="stat-box"><p>Time</p><h2 id="timer">01:30</h2></div>
+            <div class="stat-box"><p>Moves</p><h2 id="moves">0</h2></div>
+            <div class="stat-box"><p>Combo</p><h2 id="combo">x0</h2></div>
+            <div class="stat-box"><p>Limit</p><h2 id="time-limit">60</h2></div>
+        </section>
 
-        <main class="middle-panel">
+        <div class="board-container">
+            <div class="card-grid" id="card-grid" aria-label="Memory cards">
 
-            <!-- Timer, moves, and combo display -->
-            <div class="game-stats">
-                <div class="stat-box">
-                    <span class="stat-icon time-icon" aria-hidden="true">◷</span>
-                    <div class="stat-info">
-                        <p>TIME</p>
-                        <h2 id="timer">01:30</h2>
-                    </div>
-                </div>
+                <!-- Easy: cards 1-12 -->
+                <button class="card" id="card1" type="button" aria-label="Card 1"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card2" type="button" aria-label="Card 2"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card3" type="button" aria-label="Card 3"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card4" type="button" aria-label="Card 4"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card5" type="button" aria-label="Card 5"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card6" type="button" aria-label="Card 6"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card7" type="button" aria-label="Card 7"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card8" type="button" aria-label="Card 8"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card9" type="button" aria-label="Card 9"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card10" type="button" aria-label="Card 10"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card11" type="button" aria-label="Card 11"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card" id="card12" type="button" aria-label="Card 12"><span class="card-back"></span><span class="card-front">★</span></button>
 
-                <div class="stat-box">
-                    <span class="stat-icon moves-icon" aria-hidden="true">⇄</span>
-                    <div class="stat-info">
-                        <p>MOVES</p>
-                        <h2 id="moves">0</h2>
-                    </div>
-                </div>
+                <!-- Medium adds cards 13-18 -->
+                <button class="card extra-card" id="card13" type="button" aria-label="Card 13"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card extra-card" id="card14" type="button" aria-label="Card 14"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card extra-card" id="card15" type="button" aria-label="Card 15"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card extra-card" id="card16" type="button" aria-label="Card 16"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card extra-card" id="card17" type="button" aria-label="Card 17"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card extra-card" id="card18" type="button" aria-label="Card 18"><span class="card-back"></span><span class="card-front">★</span></button>
 
-                <div class="stat-box">
-                    <span class="stat-icon combo-icon" aria-hidden="true">ϟ</span>
-                    <div class="stat-info">
-                        <p>COMBO</p>
-                        <h2 id="combo">x0</h2>
-                    </div>
-                </div>
+                <!-- Hard adds cards 19-24 -->
+                <button class="card hard-card" id="card19" type="button" aria-label="Card 19"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card hard-card" id="card20" type="button" aria-label="Card 20"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card hard-card" id="card21" type="button" aria-label="Card 21"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card hard-card" id="card22" type="button" aria-label="Card 22"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card hard-card" id="card23" type="button" aria-label="Card 23"><span class="card-back"></span><span class="card-front">★</span></button>
+                <button class="card hard-card" id="card24" type="button" aria-label="Card 24"><span class="card-back"></span><span class="card-front">★</span></button>
+
             </div>
+        </div>
 
-
-            <!-- Card area -->
-            <div class="board-container">
-                <div class="card-grid" id="card-grid" aria-label="Memory cards">
-
-                    <!-- Row 1 -->
-                    <button class="card" id="card1" type="button" aria-label="Card 1">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card2" type="button" aria-label="Card 2">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card3" type="button" aria-label="Card 3">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card4" type="button" aria-label="Card 4">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <!-- Row 2 -->
-                    <button class="card" id="card5" type="button" aria-label="Card 5">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card6" type="button" aria-label="Card 6">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card7" type="button" aria-label="Card 7">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card8" type="button" aria-label="Card 8">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <!-- Row 3 -->
-                    <button class="card" id="card9" type="button" aria-label="Card 9">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card10" type="button" aria-label="Card 10">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card11" type="button" aria-label="Card 11">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card" id="card12" type="button" aria-label="Card 12">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-
-                    <!-- Extra six cards for optional Medium and Hard layouts -->
-                    <button class="card extra-card" id="card13" type="button" aria-label="Card 13">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card extra-card" id="card14" type="button" aria-label="Card 14">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card extra-card" id="card15" type="button" aria-label="Card 15">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card extra-card" id="card16" type="button" aria-label="Card 16">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card extra-card" id="card17" type="button" aria-label="Card 17">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-
-                    <button class="card extra-card" id="card18" type="button" aria-label="Card 18">
-                        <span class="card-back">?</span>
-                        <span class="card-front">★</span>
-                    </button>
-                    
-<!-- EXTRA CARDS FOR HARD MODE ONLY -->
-
-<button class="card hard-card" id="card19" type="button" aria-label="Card 19">
-    <span class="card-back">?</span>
-    <span class="card-front">★</span>
-</button>
-
-<button class="card hard-card" id="card20" type="button" aria-label="Card 20">
-    <span class="card-back">?</span>
-    <span class="card-front">★</span>
-</button>
-
-<button class="card hard-card" id="card21" type="button" aria-label="Card 21">
-    <span class="card-back">?</span>
-    <span class="card-front">★</span>
-</button>
-
-<button class="card hard-card" id="card22" type="button" aria-label="Card 22">
-    <span class="card-back">?</span>
-    <span class="card-front">★</span>
-</button>
-
-<button class="card hard-card" id="card23" type="button" aria-label="Card 23">
-    <span class="card-back">?</span>
-    <span class="card-front">★</span>
-</button>
-
-<button class="card hard-card" id="card24" type="button" aria-label="Card 24">
-    <span class="card-back">?</span>
-    <span class="card-front">★</span>
-</button>
-
-
-                </div>
-            </div>
-
-
-            <!-- Matching progress -->
+        <div class="status-line">
             <div class="matched-box">
-                <span class="matched-icon" aria-hidden="true">∞</span>
-                <p>
-                    MATCHED PAIRS:
-                    <span id="matched-pairs">0</span> / <span id="total-pairs">6</span>
-                </p>
+                <p>Pairs: <span id="matched-pairs">0</span> / <span id="total-pairs">6</span></p>
             </div>
+            <p id="game-message" role="status">Pick a level, then press Play.</p>
+        </div>
 
-            <p id="game-message" role="status">Choose a difficulty and press Play.</p>
-
-        </main>
-
-
+    </main>
 
 
-        <!-- 3. RIGHT PANEL - TOOLS AND POWER UPS -->
+    <!-- ========== CONTROLS: level, play, power-ups ========== -->
+    <aside class="side-rail">
 
-        <div class="right-panel">
+        <div class="player-box">1 player</div>
 
-            <!-- Sound and settings -->
-            <div class="top-buttons">
-                <button class="small-button" id="sound-button" type="button" aria-label="Sound">♫</button>
-                <button class="small-button" id="settings-button" type="button" aria-label="Settings">⚙</button>
+        <div class="difficulty-section">
+            <h2>Level</h2>
+            <div class="difficulty-buttons">
+                <input type="radio" id="easy" name="difficulty" value="easy" checked>
+                <label for="easy" class="difficulty-button">Easy</label>
+
+                <input type="radio" id="medium" name="difficulty" value="medium">
+                <label for="medium" class="difficulty-button">Medium</label>
+
+                <input type="radio" id="hard" name="difficulty" value="hard">
+                <label for="hard" class="difficulty-button">Hard</label>
             </div>
+        </div>
 
+        <button type="button" id="play-button" class="play-button">Play</button>
 
-            <!-- Difficulty timer -->
-            <div class="timer-box">
-                <div class="timer-icon" aria-hidden="true">◷</div>
-                <div class="timer-info">
-                    <p>TIMER</p>
-                    <h2 id="time-limit">60</h2>
-                </div>
-            </div>
-
-
-            <!-- Power up buttons -->
+        <div class="power-section">
+            <h2>Power-ups</h2>
             <div class="power-buttons">
                 <button class="power-button" id="freeze-button" type="button">
                     <span class="power-icon freeze-icon" aria-hidden="true">❄</span>
-                    <span class="power-info">
-                        <strong>FREEZE</strong>
-                        <small>(-2 MOVES)</small>
-                    </span>
+                    <span class="power-info"><strong>Freeze</strong><small>Costs 2 moves</small></span>
                 </button>
-
                 <button class="power-button" id="hint-button" type="button">
                     <span class="power-icon hint-icon" aria-hidden="true">♧</span>
-                    <span class="power-info">
-                        <strong>HINT</strong>
-                        <small>(-2 MOVES)</small>
-                    </span>
+                    <span class="power-info"><strong>Hint</strong><small>Costs 2 moves</small></span>
                 </button>
-
                 <button class="power-button" id="peek-button" type="button">
                     <span class="power-icon peek-icon" aria-hidden="true">◉</span>
-                    <span class="power-info">
-                        <strong>PEEK</strong>
-                        <small>(-4 MOVES)</small>
-                    </span>
+                    <span class="power-info"><strong>Peek</strong><small>Costs 4 moves</small></span>
                 </button>
             </div>
-
-
-            <!-- Support button -->
-            <button class="support-button" id="support-button" type="button">
-                <span aria-hidden="true">♡</span>
-                Support the creator
-            </button>
-
         </div>
 
-    </div>
+        <button class="support-button" id="support-button" type="button">♡ Support the creator</button>
+
+    </aside>
+
+</div>
 
 
-
-
-    <!-- 4. JAVASCRIPT FILES - DEVELOPED BY YOUR TEAMMATES -->
-
-    <script src="js/game.js" defer></script>
-    <script src="js/ui.js" defer></script>
+<!-- JavaScript files (built by teammates) -->
+<script src="js/jquery.min.js"></script>
+<script src="js/deck.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
 
 </body>
 </html>
