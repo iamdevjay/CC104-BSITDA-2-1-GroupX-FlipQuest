@@ -3,15 +3,16 @@
 
 // Get selected difficulty
 function getSelectedDifficulty() {
-    return $('input[name="difficulty"]:checked').val() || 'medium';
+    return $('input[name="difficulty"]:checked').val() || 'easy';
 }
 
-// Time limit for each difficulty
+ // Time limit for each difficulty
 var difficultyTimes = {
-    easy: 120,
-    medium: 90,
-    hard: 60
+    easy: 45,
+    medium: 60,
+    hard: 90
 };
+
 
 // Timer variables
 var timerInterval = null;
@@ -19,17 +20,22 @@ var timeRemaining = 0;
 var startingTime = 0;
 var gameStarted = false;
 
-// Update timer display
+
+ // Update timer display
 function updateTimerDisplay() {
-    var minutes = Math.floor(timeRemaining / 60);
-    var seconds = timeRemaining % 60;
+    var elapsedTime = startingTime - timeRemaining;
+
+    var minutes = Math.floor(elapsedTime / 60);
+    var seconds = elapsedTime % 60;
 
     var formattedTime =
         String(minutes).padStart(2, '0') + ':' +
         String(seconds).padStart(2, '0');
 
     $('#timer').text(formattedTime);
+    $('#time-limit').text(timeRemaining);
 }
+
 
 // Reset timer
 function resetTimer() {
@@ -41,7 +47,6 @@ function resetTimer() {
     timeRemaining = startingTime;
 
     updateTimerDisplay();
-    $('#time-limit').text(startingTime);
 }
 
 // Stop timer
@@ -98,13 +103,30 @@ function setupControls() {
         $('#game-message').text('Game started!');
     });
 
+  
     // Difficulty selection
     $('input[name="difficulty"]').off('change.flipquest').on('change.flipquest', function () {
+
         stopTimer();
         resetTimer();
 
+        // Stop the previous game
+        if (typeof gameActive !== 'undefined') {
+
+            gameActive = false;
+            canClick = false;
+
+            clearTimeout(hideCardsTimer);
+
+        }
+
+        // Disable cards until Play is pressed
+        $('.card').prop('disabled', true);
+
         $('#game-message').text('Difficulty changed. Press Play to start a new game.');
+
     });
+
 
     // Card clicks
     $('#card-grid').off('click.flipquest', '.card')
@@ -121,9 +143,14 @@ function setupControls() {
             // Convert card ID into a 0-based index
             var index = parseInt(this.id.replace('card', ''), 10) - 1;
 
-            if (!isNaN(index)) {
-                handleCardClick(index);
-            }
+            if (!isNaN(index) &&
+                typeof cards !== 'undefined' &&
+                index >= 0 &&
+                index < cards.length) {
+
+    handleCardClick(index);
+
+}
         });
 }
 
