@@ -1,8 +1,5 @@
 
-/* ==========================================
-   1. GET FLIPQUEST CARD SYMBOLS
-========================================== */
-
+ // Get all symbols na gagamitin sa cards
 function getCardSymbols() {
 
     return [
@@ -14,10 +11,10 @@ function getCardSymbols() {
 }
 
 
-/* ==========================================
-   2. CREATE MATCHING CARD PAIRS
-========================================== */
 
+
+
+// Create matching cards based sa difficulty
 function createDeck(pairCount) {
 
     if (![6, 9, 12].includes(pairCount)) {
@@ -62,10 +59,7 @@ function createDeck(pairCount) {
 
 
 
-/* ==========================================
-   3. SHUFFLE CARDS USING FISHER-YATES
-========================================== */
-
+// Shuffle cards para random ang position every game
 function shuffleDeck(deck) {
 
     for (let i = deck.length - 1; i > 0; i--) {
@@ -82,9 +76,7 @@ function shuffleDeck(deck) {
     }
 
 
-    // Update names based on new card positions.
-    // Keep values unchanged so pairs still match.
-
+    // Update card names based sa shuffled positions
     deck.forEach(function(card, index) {
 
         card.name = "card" + (index + 1);
@@ -102,10 +94,7 @@ function shuffleDeck(deck) {
 
 
 
-/* ==========================================
-   4. DISPLAY CARD SYMBOLS USING JQUERY
-========================================== */
-
+// Display symbols sa cards using jQuery
 function displayDeck(deck) {
 
     $(".card").each(function(index) {
@@ -115,22 +104,16 @@ function displayDeck(deck) {
         let cardData = deck[index];
 
 
-        // Remove previous card states
-
         cardElement.removeClass("is-flipped is-matched");
 
 
         if (cardData) {
-
-            // Put the matching symbol on the card front
 
             cardElement.find(".card-front").text(cardData.symbol);
 
             cardElement.prop("disabled", false);
 
         } else {
-
-            // Disable cards not used in this difficulty
 
             cardElement.find(".card-front").text("");
 
@@ -146,10 +129,7 @@ function displayDeck(deck) {
 
 
 
-/* ==========================================
-   5. VALIDATE THE CARD DECK
-========================================== */
-
+// Check if valid ang deck and complete ang pairs
 function validateDeck(deck) {
 
     if (!Array.isArray(deck) ||
@@ -172,15 +152,12 @@ function validateDeck(deck) {
         let card = deck[i];
 
 
-        // Check the card's name
-
         if (!card || card.name !== "card" + (i + 1)) {
             return false;
         }
 
 
-        // Check for invalid or repeated values
-
+        // Check for duplicate or invalid card values
         if (!Number.isInteger(card.value) ||
             card.value < 1 ||
             card.value > deck.length ||
@@ -194,8 +171,6 @@ function validateDeck(deck) {
         usedValues.add(card.value);
 
 
-        // Check whether the card has the correct symbol
-
         let symbolIndex = Math.floor((card.value - 1) / 2);
 
         if (card.symbol !== symbols[symbolIndex]) {
@@ -203,15 +178,12 @@ function validateDeck(deck) {
         }
 
 
-        // Count appearances of every symbol
-
+        // Count symbols to check if each has a pair
         symbolCounts[card.symbol] =
             (symbolCounts[card.symbol] || 0) + 1;
 
     }
 
-
-    // Every symbol must appear exactly twice
 
     return Object.keys(symbolCounts).length === deck.length / 2 &&
            Object.values(symbolCounts).every(function(count) {
