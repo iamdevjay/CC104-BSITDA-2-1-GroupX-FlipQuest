@@ -13,11 +13,23 @@ var difficultyTimes = {
     hard: 60
 };
 
+// Freeze duration for each difficulty
+var freezeTimes = {
+    easy: 15,
+    medium: 5,
+    hard: 0
+};
+
 // Timer variables
 var timerInterval = null;
 var timeRemaining = 0;
 var startingTime = 0;
 var gameStarted = false;
+
+// Freeze variables
+var freezeActive = false;
+var freezeUsed = false;
+var freezeTimeout = null;
 
 // Update timer display
 function updateTimerDisplay() {
@@ -29,6 +41,61 @@ function updateTimerDisplay() {
         String(seconds).padStart(2, '0');
 
     $('#timer').text(formattedTime);
+}
+
+// Cancel an active freeze
+function cancelFreeze() {
+    clearTimeout(freezeTimeout);
+    freezeTimeout = null;
+    freezeActive = false;
+}
+
+// Reset freeze availability for a new game
+function resetFreeze() {
+    cancelFreeze();
+    freezeUsed = false;
+
+    $('#freeze-button').removeClass('freeze-used');
+    $('#freeze-button .power-info strong').text('Freeze');
+}
+
+// Freeze countdown
+function freezeTime() {
+    var difficulty = getSelectedDifficulty();
+    var freezeDuration = freezeTimes[difficulty];
+
+    // Prevent invalid freeze activation
+    if (
+        !gameStarted ||
+        freezeActive ||
+        freezeUsed ||
+        freezeDuration === 0 ||
+        timeRemaining <= 0
+    ) {
+        return;
+    }
+
+    // Mark freeze as used
+    freezeUsed = true;
+    freezeActive = true;
+
+    // Change button appearance
+    $('#freeze-button').addClass('freeze-used');
+    $('#freeze-button .power-info strong').text('Freeze Used');
+
+    // Pause countdown without stopping the game
+    clearInterval(timerInterval);
+    timerInterval = null;
+
+    // Resume countdown automatically
+    freezeTimeout = setTimeout(function () {
+        freezeActive = false;
+        freezeTimeout = null;
+
+        if (gameStarted && timeRemaining > 0) {
+            startTimer();
+        }
+    }, freezeDuration * 1000);
 }
 
 // Reset timer
@@ -48,12 +115,21 @@ function resetTimer() {
 function stopTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
+
+    // Cancel freeze if the game ends
+    cancelFreeze();
+
     gameStarted = false;
 }
 
 // Start timer
 function startTimer() {
-    if (timerInterval !== null || timeRemaining <= 0) {
+    if (
+        timerInterval !== null ||
+        timeRemaining <= 0 ||
+        freezeActive ||
+        !gameStarted
+    ) {
         return;
     }
 
@@ -81,15 +157,16 @@ function setupControls() {
     $('#play-button').off('click.flipquest').on('click.flipquest', function () {
         var difficulty = getSelectedDifficulty();
 
+        // Reset timer and freeze for a new game
+        resetFreeze();
         resetTimer();
 
-        // Check if game.js has the required function
         if (typeof startGame !== 'function') {
             $('#game-message').text('Game setup is not ready yet.');
             return;
         }
 
-        // Initialize or reset the game
+        // Initialize the game
         startGame(difficulty);
 
         gameStarted = true;
@@ -100,10 +177,35 @@ function setupControls() {
 
     // Difficulty selection
     $('input[name="difficulty"]').off('change.flipquest').on('change.flipquest', function () {
+
+        // Stop the timer and cancel Freeze
         stopTimer();
+
+        // Restore Freeze button appearance and availability
+        resetFreeze();
+
+        // Cancel any pending card flip-back
+        clearTimeout(hideCardsTimer);
+        hideCardsTimer = null;
+
+        // Reset the card selection state
+        firstCard = null;
+        canClick = true;
+
+        // Reset the timer for the selected difficulty
         resetTimer();
 
+        // Prepare a fresh board for the selected difficulty
+        if (typeof startGame === 'function') {
+            startGame(getSelectedDifficulty());
+        }
+
         $('#game-message').text('Difficulty changed. Press Play to start a new game.');
+    });
+
+    // Freeze button
+    $('#freeze-button').off('click.flipquest').on('click.flipquest', function () {
+        freezeTime();
     });
 
     // Card clicks
@@ -130,6 +232,6 @@ function setupControls() {
 // Initialize timer and controls
 $(document).ready(function () {
     resetTimer();
+    resetFreeze();
     setupControls();
 });
-//Hello
