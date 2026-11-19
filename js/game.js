@@ -80,7 +80,9 @@ var hideCardsTimer;
 
 // =====dre ito hanap mo ====================================
 function startGame(difficulty)
+
 {
+    $("#play-button").text("PLAY");
     if (difficulty === "easy")
     {
         gameMode = 6;
@@ -97,6 +99,7 @@ function startGame(difficulty)
     // good daw na i clear for next game
     clearTimeout(hideCardsTimer);
     hideCardsTimer = null;
+    resetPeekPowerUp();
 
     // Reset
     correct = 0;
@@ -286,10 +289,12 @@ function handleCardClick(index)
 function endGame(reason)
 {
     canClick = false;
+    $("#play-button").text("PLAY AGAIN");
 
     // dagdag: huwag na i-flip back kapag tapos na ang game
     clearTimeout(hideCardsTimer);
     hideCardsTimer = null;
+    cancelPeekPowerUp();
 
     if (typeof stopTimer === "function")
     {

@@ -193,3 +193,111 @@ function validateDeck(deck) {
            });
 
 }
+    // PARA SA PEEK NA POWER UP
+    var peekUsed = false;
+    var peekActive = false;
+    var peekTimer = null;
+
+
+    // Peek power-up para makita lahat ng unmatched cards
+    function peekCards() {
+
+        // Check if pwede gamitin ang Peek
+        if (!gameStarted || timeRemaining <= 0 ||
+            peekUsed || peekActive || !canClick ||
+            firstCard !== null) {
+
+            return;
+        }
+
+        peekUsed = true;
+        peekActive = true;
+        canClick = false;
+
+        $("#peek-button").prop("disabled", true);
+
+
+        // Reveal cards na hindi pa matched
+        deck.forEach(function(card) {
+
+            if (!card.flipped) {
+
+                $("#" + card.name).addClass("is-flipped");
+
+            }
+
+        });
+
+
+        // Hide the cards again after 2 seconds
+        peekTimer = setTimeout(function() {
+
+            deck.forEach(function(card) {
+
+                if (!card.flipped) {
+
+                    $("#" + card.name).removeClass("is-flipped");
+
+                }
+
+            });
+
+            peekActive = false;
+            peekTimer = null;
+
+            if (gameStarted && timeRemaining > 0) {
+                canClick = true;
+            }
+
+        }, 1000);
+
+    }
+    
+    // Reset Peek kapag new game
+    function resetPeekPowerUp() {
+
+        clearTimeout(peekTimer);
+
+        peekTimer = null;
+        peekUsed = false;
+        peekActive = false;
+
+        $("#peek-button").prop("disabled", false);
+
+    }
+
+
+
+
+
+    // Cancel Peek kapag game over
+    function cancelPeekPowerUp() {
+
+        clearTimeout(peekTimer);
+
+        peekTimer = null;
+        peekActive = false;
+
+        deck.forEach(function(card) {
+
+            if (!card.flipped) {
+                $("#" + card.name).removeClass("is-flipped");
+            }
+
+        });
+
+        $("#peek-button").prop("disabled", true);
+
+    }
+
+
+        // Click event for Peek button
+    $(document).ready(function() {
+
+        $("#peek-button").on("click", function() {
+
+            peekCards();
+
+        });
+
+    });
