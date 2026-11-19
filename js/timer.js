@@ -33,17 +33,14 @@ var freezeTimeout = null;
 
 // Update timer display
 function updateTimerDisplay() {
-    var elapsedTime = startingTime - timeRemaining;
-
-    var minutes = Math.floor(elapsedTime / 60);
-    var seconds = elapsedTime % 60;
+    var minutes = Math.floor(timeRemaining / 60);
+    var seconds = timeRemaining % 60;
 
     var formattedTime =
         String(minutes).padStart(2, '0') + ':' +
         String(seconds).padStart(2, '0');
 
     $('#timer').text(formattedTime);
-    $('#time-limit').text(timeRemaining);
 }
 
 // Cancel an active freeze
