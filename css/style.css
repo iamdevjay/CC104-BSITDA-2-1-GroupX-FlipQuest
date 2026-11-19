@@ -441,3 +441,27 @@ label[for="hard"]::after   { content: "12 pairs"; }
 @media (prefers-reduced-motion: reduce) {
     .card { transition: none; }
 }
+/* ITO LANG IAADD KO ANDREI*/
+/* Freeze button after being used */
+#freeze-button.freeze-used {
+    background-color: #d7d5e2;
+    border-color: #858292;
+    color: #858292;
+    opacity: 0.7;
+}
+
+#freeze-button.freeze-used .power-icon {
+    filter: grayscale(100%);
+}
+
+/* (andrei) Freeze button after being used */
+#freeze-button.freeze-used {
+    background-color: #d7d5e2;
+    border-color: #858292;
+    color: #858292;
+    opacity: 0.7;
+}
+
+#freeze-button.freeze-used .power-icon {
+    filter: grayscale(100%);
+}
