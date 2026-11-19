@@ -6,13 +6,19 @@ function getSelectedDifficulty() {
     return $('input[name="difficulty"]:checked').val() || 'easy';
 }
 
- // Time limit for each difficulty
+// Time limit for each difficulty
 var difficultyTimes = {
-    easy: 45,
-    medium: 60,
-    hard: 90
+    easy: 90,
+    medium: 70,
+    hard: 45
 };
 
+// Freeze duration for each difficulty
+var freezeTimes = {
+    easy: 15,
+    medium: 5,
+    hard: 0
+};
 
 // Timer variables
 var timerInterval = null;
@@ -20,22 +26,72 @@ var timeRemaining = 0;
 var startingTime = 0;
 var gameStarted = false;
 
+// Freeze variables
+var freezeActive = false;
+var freezeUsed = false;
+var freezeTimeout = null;
 
- // Update timer display
+// Update timer display
 function updateTimerDisplay() {
-    var elapsedTime = startingTime - timeRemaining;
-
-    var minutes = Math.floor(elapsedTime / 60);
-    var seconds = elapsedTime % 60;
+    var minutes = Math.floor(timeRemaining / 60);
+    var seconds = timeRemaining % 60;
 
     var formattedTime =
         String(minutes).padStart(2, '0') + ':' +
         String(seconds).padStart(2, '0');
 
     $('#timer').text(formattedTime);
-    $('#time-limit').text(timeRemaining);
 }
 
+// Cancel an active freeze
+function cancelFreeze() {
+    clearTimeout(freezeTimeout);
+    freezeTimeout = null;
+    freezeActive = false;
+}
+
+// Reset freeze availability
+function resetFreeze() {
+    cancelFreeze();
+    freezeUsed = false;
+
+    $('#freeze-button').removeClass('freeze-used');
+    $('#freeze-button .power-info strong').text('Freeze');
+}
+
+// Freeze countdown
+function freezeTime() {
+    var difficulty = getSelectedDifficulty();
+    var freezeDuration = freezeTimes[difficulty];
+
+    if (
+        !gameStarted ||
+        freezeActive ||
+        freezeUsed ||
+        freezeDuration === 0 ||
+        timeRemaining <= 0
+    ) {
+        return;
+    }
+
+    freezeUsed = true;
+    freezeActive = true;
+
+    $('#freeze-button').addClass('freeze-used');
+    $('#freeze-button .power-info strong').text('Freeze Used');
+
+    clearInterval(timerInterval);
+    timerInterval = null;
+
+    freezeTimeout = setTimeout(function () {
+        freezeActive = false;
+        freezeTimeout = null;
+
+        if (gameStarted && timeRemaining > 0) {
+            startTimer();
+        }
+    }, freezeDuration * 1000);
+}
 
 // Reset timer
 function resetTimer() {
@@ -47,6 +103,7 @@ function resetTimer() {
     timeRemaining = startingTime;
 
     updateTimerDisplay();
+    $('#time-limit').text(startingTime);
 }
 
 // Stop timer
@@ -113,10 +170,10 @@ function setupControls() {
         $('#game-message').text('Game started!');
     });
 
-  
     // Difficulty selection
     $('input[name="difficulty"]').off('change.flipquest').on('change.flipquest', function () {
 
+        // Stop timer and reset Freeze
         stopTimer();
         resetFreeze();
 
@@ -131,23 +188,16 @@ function setupControls() {
         // Reset timer for selected difficulty
         resetTimer();
 
-        // Stop the previous game
-        if (typeof gameActive !== 'undefined') {
-
-            gameActive = false;
-            canClick = false;
-
-            clearTimeout(hideCardsTimer);
-
-        }
-
         // Disable cards until Play is pressed
         $('.card').prop('disabled', true);
 
         $('#game-message').text('Difficulty changed. Press Play to start a new game.');
-
     });
 
+    // Freeze button
+    $('#freeze-button').off('click.flipquest').on('click.flipquest', function () {
+        freezeTime();
+    });
 
     // Card clicks
     $('#card-grid').off('click.flipquest', '.card')
@@ -164,14 +214,14 @@ function setupControls() {
             // Convert card ID into a 0-based index
             var index = parseInt(this.id.replace('card', ''), 10) - 1;
 
-            if (!isNaN(index) &&
+            if (
+                !isNaN(index) &&
                 typeof cards !== 'undefined' &&
                 index >= 0 &&
-                index < cards.length) {
-
-    handleCardClick(index);
-
-}
+                index < cards.length
+            ) {
+                handleCardClick(index);
+            }
         });
 }
 
