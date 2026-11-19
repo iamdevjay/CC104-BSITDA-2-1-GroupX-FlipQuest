@@ -1,4 +1,3 @@
-
 'use strict';
 
 // Get selected difficulty
@@ -50,7 +49,7 @@ function cancelFreeze() {
     freezeActive = false;
 }
 
-// Reset freeze availability for a new game
+// Reset freeze availability
 function resetFreeze() {
     cancelFreeze();
     freezeUsed = false;
@@ -64,7 +63,6 @@ function freezeTime() {
     var difficulty = getSelectedDifficulty();
     var freezeDuration = freezeTimes[difficulty];
 
-    // Prevent invalid freeze activation
     if (
         !gameStarted ||
         freezeActive ||
@@ -75,19 +73,15 @@ function freezeTime() {
         return;
     }
 
-    // Mark freeze as used
     freezeUsed = true;
     freezeActive = true;
 
-    // Change button appearance
     $('#freeze-button').addClass('freeze-used');
     $('#freeze-button .power-info strong').text('Freeze Used');
 
-    // Pause countdown without stopping the game
     clearInterval(timerInterval);
     timerInterval = null;
 
-    // Resume countdown automatically
     freezeTimeout = setTimeout(function () {
         freezeActive = false;
         freezeTimeout = null;
@@ -116,7 +110,6 @@ function stopTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
 
-    // Cancel freeze if the game ends
     cancelFreeze();
 
     gameStarted = false;
@@ -157,7 +150,6 @@ function setupControls() {
     $('#play-button').off('click.flipquest').on('click.flipquest', function () {
         var difficulty = getSelectedDifficulty();
 
-        // Reset timer and freeze for a new game
         resetFreeze();
         resetTimer();
 
@@ -166,10 +158,13 @@ function setupControls() {
             return;
         }
 
-        // Initialize the game
+        // Initialize a fresh game
         startGame(difficulty);
 
+        // Enable the game
         gameStarted = true;
+        $('.card').prop('disabled', false);
+
         startTimer();
 
         $('#game-message').text('Game started!');
@@ -178,27 +173,23 @@ function setupControls() {
     // Difficulty selection
     $('input[name="difficulty"]').off('change.flipquest').on('change.flipquest', function () {
 
-        // Stop the timer and cancel Freeze
+        // Stop timer and reset Freeze
         stopTimer();
-
-        // Restore Freeze button appearance and availability
         resetFreeze();
 
-        // Cancel any pending card flip-back
+        // Cancel pending card flip-back
         clearTimeout(hideCardsTimer);
         hideCardsTimer = null;
 
-        // Reset the card selection state
+        // Reset card selection
         firstCard = null;
         canClick = true;
 
-        // Reset the timer for the selected difficulty
+        // Reset timer for selected difficulty
         resetTimer();
 
-        // Prepare a fresh board for the selected difficulty
-        if (typeof startGame === 'function') {
-            startGame(getSelectedDifficulty());
-        }
+        // Disable cards until Play is pressed
+        $('.card').prop('disabled', true);
 
         $('#game-message').text('Difficulty changed. Press Play to start a new game.');
     });
@@ -233,5 +224,9 @@ function setupControls() {
 $(document).ready(function () {
     resetTimer();
     resetFreeze();
+
+    // Keep cards faded until Play is pressed
+    $('.card').prop('disabled', true);
+
     setupControls();
 });

@@ -442,7 +442,7 @@ label[for="hard"]::after   { content: "12 pairs"; }
     .card { transition: none; }
 }
 
-/*added by Jean*/
+/* Inedit ko (andrei)*/
 /* Freeze button after being used */
 #freeze-button.freeze-used {
     background-color: #d7d5e2;
@@ -454,4 +454,4 @@ label[for="hard"]::after   { content: "12 pairs"; }
 #freeze-button.freeze-used .power-icon {
     filter: grayscale(100%);
 }
-/*itong section lang na ito*/
+/*hanggang dito lang*/
