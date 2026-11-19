@@ -9,15 +9,15 @@ function getSelectedDifficulty() {
 // Time limit for each difficulty
 var difficultyTimes = {
     easy: 90,
-    medium: 70,
-    hard: 45
+    medium: 60,
+    hard: 50
 };
 
 // Freeze duration for each difficulty
 var freezeTimes = {
-    easy: 15,
+    easy: 10,
     medium: 5,
-    hard: 0
+    hard: 3
 };
 
 // Timer variables
@@ -103,7 +103,7 @@ function resetTimer() {
     timeRemaining = startingTime;
 
     updateTimerDisplay();
-    $('#time-limit').text(startingTime);
+   
 }
 
 // Stop timer
