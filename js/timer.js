@@ -1,8 +1,9 @@
+
 'use strict';
 
 // Get selected difficulty
 function getSelectedDifficulty() {
-    return $('input[name="difficulty"]:checked').val() || 'medium';
+    return $('input[name="difficulty"]:checked').val() || 'easy';
 }
 
 // Time limit for each difficulty
@@ -161,9 +162,8 @@ function setupControls() {
         // Initialize a fresh game
         startGame(difficulty);
 
-        // Enable the game
+        // Start the game
         gameStarted = true;
-        $('.card').prop('disabled', false);
 
         startTimer();
 
@@ -214,7 +214,12 @@ function setupControls() {
             // Convert card ID into a 0-based index
             var index = parseInt(this.id.replace('card', ''), 10) - 1;
 
-            if (!isNaN(index)) {
+            if (
+                !isNaN(index) &&
+                typeof cards !== 'undefined' &&
+                index >= 0 &&
+                index < cards.length
+            ) {
                 handleCardClick(index);
             }
         });
@@ -222,10 +227,11 @@ function setupControls() {
 
 // Initialize timer and controls
 $(document).ready(function () {
+
     resetTimer();
     resetFreeze();
 
-    // Keep cards faded until Play is pressed
+    // Keep cards disabled until Play is pressed
     $('.card').prop('disabled', true);
 
     setupControls();

@@ -441,8 +441,7 @@ label[for="hard"]::after   { content: "12 pairs"; }
 @media (prefers-reduced-motion: reduce) {
     .card { transition: none; }
 }
-
-/* Inedit ko (andrei)*/
+/* ITO LANG IAADD KO ANDREI*/
 /* Freeze button after being used */
 #freeze-button.freeze-used {
     background-color: #d7d5e2;
@@ -454,4 +453,3 @@ label[for="hard"]::after   { content: "12 pairs"; }
 #freeze-button.freeze-used .power-icon {
     filter: grayscale(100%);
 }
-/*hanggang dito lang*/
