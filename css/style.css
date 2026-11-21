@@ -465,3 +465,8 @@ label[for="hard"]::after   { content: "12 pairs"; }
 #freeze-button.freeze-used .power-icon {
     filter: grayscale(100%);
 }
+
+.hint-highlight {
+    filter: brightness(1.4) sepia(1) saturate(3);
+    transition: filter 0.15s ease;
+}

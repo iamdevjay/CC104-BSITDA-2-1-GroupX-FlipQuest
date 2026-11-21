@@ -74,7 +74,11 @@ var canClick = true;
 //dre ===============
 var hideCardsTimer;
 
-
+// this for the hint
+var selectedHintCard = null;
+var hintUsed = false;
+var hintActive = false;
+var hintTimer = null;
 
 
 
@@ -102,6 +106,13 @@ function startGame(difficulty)
     resetPeekPowerUp();
 
     // Reset
+    selectedHintCard = null;
+    hintUsed = false;
+    hintActive = false;
+
+    
+    clearTimeout(hintTimer);
+    hintTimer = null;
     correct = 0;
     fail = 0;
     firstCard = null;
@@ -109,6 +120,9 @@ function startGame(difficulty)
     moves = 0;
     matchedCards = [];
     combo = 0;
+    $(".card").removeClass("hint-highlight");
+    $("#hint-button").prop("disabled", false);
+
 
     //==== displaay cards  from dick.js
     deck = createDeck(gameMode);
@@ -218,10 +232,11 @@ function handleCardClick(index)
 
 
     //this savess teh first card
-    if (firstCard === null)
+   if (firstCard === null)
     {
-        firstCard = clickedCard;
-        return;
+    firstCard = clickedCard;
+    selectedHintCard = clickedCard;
+    return;
     }
 
 
@@ -320,3 +335,96 @@ function restartGame()
 {
     $("#play-button").trigger("click");
 }
+
+
+
+function Hint()
+{
+    if (!selectedHintCard || hintUsed || hintActive || !canClick || firstCard !== selectedHintCard)
+    {
+        return;
+    }
+
+    // find the pair
+    var pairCard = deck.find(function(card)
+    {
+        return card !== selectedHintCard && cardsMatch(selectedHintCard, card);
+
+    });
+
+
+
+    //i dont get why ask ai suposed to avoid crashes i think its the call it cause gurad...
+    if (!pairCard) return;
+    var pairElement = document.getElementById(pairCard.name);
+    if (!pairElement) return;
+
+    hintUsed = true;
+    hintActive = true;
+    canClick = false;
+
+
+
+
+
+    $("#hint-button").prop("disabled", true);
+
+    // find row or collum 
+    var targetRow = pairElement.offsetTop;
+    var targetColumn = pairElement.offsetLeft;
+
+    // random
+    var showRow = Math.random() < 0.5;
+
+    var boardCards = Array.from(
+        document.querySelectorAll("#card-grid .card")
+    ).filter(function(card)
+    {
+        return card.offsetParent !== null;
+    });
+
+    // Highlight selected row or column
+    var highlightedCards = boardCards.filter(function(card)
+    {
+        return showRow
+            ? card.offsetTop === targetRow
+            : card.offsetLeft === targetColumn;
+    });
+
+    highlightedCards.forEach(function(card)
+    {
+        card.classList.add("hint-highlight");
+    });
+
+    // Restore after 600ms
+    hintTimer = setTimeout(function()
+    {
+        highlightedCards.forEach(function(card)
+        {
+            card.classList.remove("hint-highlight");
+        });
+
+        hintActive = false;
+        hintTimer = null;
+
+        if (gameStarted && timeRemaining > 0)
+        {
+            canClick = true;
+        }
+
+    }, 600);
+}
+
+
+ // hint on the button bruh
+    $(document).ready(function() {
+
+        $("#hint-button").on("click", function() 
+        {
+
+            
+            Hint();
+
+        });
+
+    });
