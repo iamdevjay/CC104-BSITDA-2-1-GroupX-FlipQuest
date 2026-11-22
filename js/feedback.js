@@ -83,6 +83,16 @@ $(function () {
     attachFeedbackHooks();
     updateStatsDisplay(getCurrentGameStats());
 
+    $('#hint-button').on('click.feedback', function () {
+        const noCardSelected =
+            (typeof firstCard === 'undefined' || firstCard === null) ||
+            (typeof selectedHintCard !== 'undefined' && !selectedHintCard);
+
+        if (noCardSelected) {
+            showGameMessage('you need to select a card before using a hint skill');
+        }
+    });
+
     $('input[name="difficulty"]').on('change.feedback', function () {
         const level = $(this).val();
         const pairs = level === 'medium' ? 9 : level === 'hard' ? 12 : 6;
