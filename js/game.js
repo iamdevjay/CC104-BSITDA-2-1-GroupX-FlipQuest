@@ -341,7 +341,13 @@ function restartGame()
 function Hint()
 {
     if (!selectedHintCard || hintUsed || hintActive || !canClick || firstCard !== selectedHintCard)
-    {
+    {   //msg pag wala pang na click 
+        //bruh ngayon lang nagamit yung game message.
+        $('#game-message').text('Hint power-up only works when 1 unpaired card is open.');
+
+        setTimeout(function () 
+        {
+        $('#game-message').text('Game started!'); }, 1000);
         return;
     }
 
