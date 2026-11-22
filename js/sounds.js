@@ -1,3 +1,4 @@
+
 // sounds.js
 // Sound effects 
 //   #sound-button = sound effects (SFX)
@@ -6,19 +7,50 @@ var FlipSound = (function () {
 
 
     // WALATO KASI WALAPANG MUSIC.
-    var MUSIC_FILE = "";
+    //var MUSIC_FILE = "";
+
+    // Background music files
+    var MUSIC_TRACKS = {
+        easy: [
+            "assets/bgms/Easy1.mp3",
+            "assets/bgms/Easy2.mp3",
+            "assets/bgms/Easy3.mp3",
+            "assets/bgms/Easy4.mp3"
+        ],
+        medium: [
+            "assets/bgms/Medium1.mp3",
+            "assets/bgms/Medium2.mp3",
+            "assets/bgms/Medium3.mp3",
+            "assets/bgms/Medium4.mp3"
+        ],
+        hard: [
+            "assets/bgms/Hard1.mp3",
+            "assets/bgms/Hard2.mp3",
+            "assets/bgms/Hard3.mp3",
+            "assets/bgms/Hard4.mp3"
+        ]
+    };
 
     var sfxOn = true;          // sound effects on/off
     var musicOn = true;        // music on/off
     var VOLUME = 0.06;         // effects loudness: 0.03 = very quiet, 0.1 = louder
     var ctx = null;            // the audio engine (made on the first click)
     var musicStarted = false;
-    var music = null;
+    var music = new Audio();
 
-    if (MUSIC_FILE) {
-        music = new Audio(MUSIC_FILE);
-        music.loop = true;
-        music.volume = 0.25;
+    music.loop = true;
+    music.volume = 0.25;
+
+    var currentTrackIndex = 0;
+    var currentDifficulty = "easy";
+
+    var pressTimer = null;
+    var longPressTriggered = false;
+
+    // Get selected difficulty
+    function getSelectedDifficulty() {
+        var selected = document.querySelector('input[name="difficulty"]:checked');
+        return selected ? selected.value : "easy";
     }
 
     //  1. the beep maker 
@@ -73,12 +105,63 @@ var FlipSound = (function () {
         if (music) music.pause();
     }
 
+    // Load the selected music track
+    function loadMusic() {
+        var tracks = MUSIC_TRACKS[currentDifficulty];
+
+        music.pause();
+        music.src = tracks[currentTrackIndex];
+        music.load();
+
+        if (musicStarted && musicOn) {
+            playMusic();
+        }
+    }
+
+    // Start music with a random song
+    function startMusic() {
+        currentDifficulty = getSelectedDifficulty();
+
+        var tracks = MUSIC_TRACKS[currentDifficulty];
+
+        currentTrackIndex = Math.floor(Math.random() * tracks.length);
+
+        musicStarted = true;
+        loadMusic();
+    }
+
+    // Move to the next song
+    function nextMusicTrack() {
+        var difficulty = getSelectedDifficulty();
+
+        if (difficulty !== currentDifficulty) {
+            currentDifficulty = difficulty;
+            currentTrackIndex = 0;
+        } else {
+            currentTrackIndex = (currentTrackIndex + 1) % MUSIC_TRACKS[difficulty].length;
+        }
+
+
+        loadMusic();
+    }
+
     //  4. buttons 
     var playBtn = document.getElementById("play-button");
     playBtn.addEventListener("click", function () {
-        musicStarted = true;
+        startMusic();
         playMusic();
         sfx.play();
+    });
+
+    // Change music when difficulty changes
+    document.querySelectorAll('input[name="difficulty"]').forEach(function (radio) {
+        radio.addEventListener("change", function () {
+            currentDifficulty = getSelectedDifficulty();
+            currentTrackIndex = 0;
+
+            musicStarted = false;
+            pauseMusic();
+        });
     });
 
     document.getElementById("freeze-button").addEventListener("click", sfx.freeze);
@@ -103,11 +186,41 @@ var FlipSound = (function () {
 
     // Music button: only the music
     var musicBtn = document.getElementById("music-button");
-    musicBtn.addEventListener("click", function () {
-        musicOn = !musicOn;
-        musicBtn.classList.toggle("is-off", !musicOn);
-        musicBtn.setAttribute("aria-pressed", musicOn);
-        if (musicOn) { playMusic(); } else { pauseMusic(); }
+
+    musicBtn.addEventListener("pointerdown", function (event) {
+        if (event.button !== 0) return;
+
+        longPressTriggered = false;
+
+        pressTimer = setTimeout(function () {
+            longPressTriggered = true;
+
+            musicOn = !musicOn;
+            musicBtn.classList.toggle("is-off", !musicOn);
+            musicBtn.setAttribute("aria-pressed", musicOn);
+
+            if (musicOn) {
+                playMusic();
+            } else {
+                pauseMusic();
+            }
+        }, 2000);
+    });
+
+    musicBtn.addEventListener("pointerup", function () {
+        clearTimeout(pressTimer);
+
+        if (!longPressTriggered) {
+            nextMusicTrack();
+        }
+    });
+
+    musicBtn.addEventListener("pointercancel", function () {
+        clearTimeout(pressTimer);
+    });
+
+    musicBtn.addEventListener("contextmenu", function (event) {
+        event.preventDefault();
     });
 
     //  5. watching the game 
