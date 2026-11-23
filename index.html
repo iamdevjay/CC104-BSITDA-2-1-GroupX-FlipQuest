@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/support.css">
 </head>
 
 <body>
@@ -140,14 +141,50 @@
 </div>
 
 
+
+<!-- Support the Creator Popup -->
+<div id="support-modal" class="support-modal">
+
+    <!-- Floating GIFs -->
+    <div class="support-gif-layer">
+        <img class="floating-gif" src="assets/support/gif1.gif" alt="GIF 1">
+        <img class="floating-gif" src="assets/support/gif2.gif" alt="GIF 2">
+        <img class="floating-gif" src="assets/support/gif3.gif" alt="GIF 3">
+    </div>
+
+    <div class="support-content">
+
+        <button id="close-support" class="close-support" type="button">&times;</button>
+
+        <h2>Support the Creator</h2>
+
+        <img
+            class="support-main-image"
+            src="assets/support/background.png"
+            alt="Support the Creator"
+        >
+
+        <p>E-Ngaroling is ril!</p>
+
+        <audio id="support-music" loop>
+            <source src="assets/support/background-song.mp3" type="audio/mpeg">
+        </audio>
+
+    </div>
+
+</div>
+
+
+
 <!-- JavaScript files -->
- <script src="js/pause.js"></script>
 <script src="js/jquery.min.js"></script>
+<script src="js/pause.js"></script>
 <script src="js/sounds.js"></script>
 <script src="js/deck.js"></script>
 <script src="js/game.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/timer.js"></script>
+<script src="js/support.js"></script>
 
 </body>
 </html>
