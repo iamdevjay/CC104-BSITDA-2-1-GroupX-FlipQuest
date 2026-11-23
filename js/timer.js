@@ -58,7 +58,7 @@ function resetFreeze() {
     cancelFreeze();
     freezeUsed = false;
 
-    $('#freeze-button').removeClass('freeze-used');
+    $('#freeze-button').prop('disabled', false);
     $('#freeze-button .power-info strong').text('Freeze');
 }
 
@@ -80,8 +80,7 @@ function freezeTime() {
     freezeUsed = true;
     freezeActive = true;
 
-    $('#freeze-button').addClass('freeze-used');
-    $('#freeze-button .power-info strong').text('Freeze Used');
+    $('#freeze-button').prop('disabled', true);
 
     clearInterval(timerInterval);
     timerInterval = null;
@@ -239,3 +238,5 @@ $(document).ready(function () {
 
     setupControls();
 });
+
+
