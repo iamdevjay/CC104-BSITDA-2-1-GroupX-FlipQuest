@@ -1,13 +1,11 @@
-
 // sounds.js
-// Sound effects 
+// Sound effects + music player
 //   #sound-button = sound effects (SFX)
+//   #music-button = play / pause music
+//   #stop-button  = stop music (balik sa simula ng song)
+//   #next-button  = next song
 
 var FlipSound = (function () {
-
-
-    // WALATO KASI WALAPANG MUSIC.
-    //var MUSIC_FILE = "";
 
     // Background music files
     var MUSIC_TRACKS = {
@@ -32,20 +30,23 @@ var FlipSound = (function () {
     };
 
     var sfxOn = true;          // sound effects on/off
-    var musicOn = true;        // music on/off
     var VOLUME = 0.06;         // effects loudness: 0.03 = very quiet, 0.1 = louder
     var ctx = null;            // the audio engine (made on the first click)
-    var musicStarted = false;
-    var music = new Audio();
 
-    music.loop = true;
+    var music = new Audio();
+    music.loop = false;        // hindi na loop, kasi next song na pag tapos
     music.volume = 0.25;
 
     var currentTrackIndex = 0;
     var currentDifficulty = "easy";
+    var musicState = "stopped";       // "playing", "paused" or "stopped"
+    var autoStart = true;             // magsisimula ba ang music pag Play? (off kapag ni-stop/pause ng player)
+    var resumeAfterPause = false;     // tumutugtog ba bago i-pause ng pause menu?
+    var failedInARow = 0;             // para di mag-loop forever kapag walang file
 
-    var pressTimer = null;
-    var longPressTriggered = false;
+    var musicBtn = document.getElementById("music-button");
+    var stopBtn = document.getElementById("stop-button");
+    var nextBtn = document.getElementById("next-button");
 
     // Get selected difficulty
     function getSelectedDifficulty() {
@@ -53,7 +54,7 @@ var FlipSound = (function () {
         return selected ? selected.value : "easy";
     }
 
-    //  1. the beep maker 
+    //  1. the beep maker
     function getCtx() {
         if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
         if (ctx.state === "suspended") ctx.resume();
@@ -81,7 +82,7 @@ var FlipSound = (function () {
         osc.stop(t + length + 0.05);
     }
 
-    //  2. all the sound effects 
+    //  2. all the sound effects
     var sfx = {
         flip:   function () { beep(440, 0, 0.09); },
         match:  function () { beep(659, 0, 0.25); beep(880, 0.12, 0.35); },
@@ -94,43 +95,40 @@ var FlipSound = (function () {
         peek:   function () { beep(392, 0, 0.15); beep(494, 0.08, 0.15); beep(587, 0.16, 0.25); }
     };
 
-    //  3. music 
-    function playMusic() {
-        if (music && musicOn && musicStarted) {
-            music.play().catch(function () {});   // ignore if the browser blocks it
-        }
+    //  3. music player
+
+    // ♫ may guhit kapag naka-pause o stop ang music
+    function updateMusicButtons() {
+        var playing = musicState === "playing";
+
+        musicBtn.classList.toggle("is-off", !playing);
+        musicBtn.setAttribute("aria-pressed", playing);
+        musicBtn.title = playing ? "Pause music" : "Play music";
     }
 
-    function pauseMusic() {
-        if (music) music.pause();
+    // load a song and play it
+    function loadTrack(index) {
+        currentTrackIndex = index;
+        music.src = MUSIC_TRACKS[currentDifficulty][currentTrackIndex];
+
+        musicState = "playing";
+        music.play().catch(function () {
+            musicState = "paused";          // hinarang ng browser
+            updateMusicButtons();
+        });
+        updateMusicButtons();
     }
 
-    // Load the selected music track
-    function loadMusic() {
-        var tracks = MUSIC_TRACKS[currentDifficulty];
-
-        music.pause();
-        music.src = tracks[currentTrackIndex];
-        music.load();
-
-        if (musicStarted && musicOn) {
-            playMusic();
-        }
-    }
-
-    // Start music with a random song
-    function startMusic() {
+    // Start music with a random song (from the selected difficulty)
+    function startRandomTrack() {
         currentDifficulty = getSelectedDifficulty();
 
         var tracks = MUSIC_TRACKS[currentDifficulty];
 
-        currentTrackIndex = Math.floor(Math.random() * tracks.length);
-
-        musicStarted = true;
-        loadMusic();
+        loadTrack(Math.floor(Math.random() * tracks.length));
     }
 
-    // Move to the next song
+    // Move to the next song (after the last song, balik sa una)
     function nextMusicTrack() {
         var difficulty = getSelectedDifficulty();
 
@@ -138,30 +136,126 @@ var FlipSound = (function () {
             currentDifficulty = difficulty;
             currentTrackIndex = 0;
         } else {
-            currentTrackIndex = (currentTrackIndex + 1) % MUSIC_TRACKS[difficulty].length;
+            currentTrackIndex = (currentTrackIndex + 1) % MUSIC_TRACKS[currentDifficulty].length;
         }
 
-
-        loadMusic();
+        loadTrack(currentTrackIndex);
     }
 
-    //  4. buttons 
+    // pag tapos ang song, next song na kusa
+    music.addEventListener("ended", nextMusicTrack);
+
+    // kapag hindi ma-load ang file (mali ang pangalan), skip. Titigil kapag lahat ay fail.
+    music.addEventListener("error", function () {
+        failedInARow++;
+        if (failedInARow < MUSIC_TRACKS[currentDifficulty].length) {
+            nextMusicTrack();
+        } else {
+            failedInARow = 0;
+            musicState = "stopped";
+            updateMusicButtons();
+        }
+    });
+    music.addEventListener("playing", function () { failedInARow = 0; });
+
+
+    // Stop background music kapag game over
+function stopGameMusic() {
+
+    music.pause();
+
+    if (music.getAttribute("src")) {
+        music.currentTime = 0;
+    }
+
+    musicState = "stopped";
+    resumeAfterPause = false;
+
+    updateMusicButtons();
+
+}
+
+    // Ginagamit ng pause.js: pause ang music kasama ng game, tapos ibalik
+    function pauseMusic() {
+        if (musicState === "playing" && !music.paused) {
+            music.pause();
+            resumeAfterPause = true;
+        }
+    }
+
+    function resumeMusic() {
+        if (resumeAfterPause) {
+            resumeAfterPause = false;
+            music.play().catch(function () {});
+        }
+    }
+
+    //  4. buttons
+
+    // Game Play button: simula ng music (maliban kung ni-stop ng player) + sound
     var playBtn = document.getElementById("play-button");
     playBtn.addEventListener("click", function () {
-        startMusic();
-        playMusic();
+        resumeAfterPause = false;      // kasama ang Restart ng pause menu, kasi nagki-click yun ng Play
+        if (autoStart) startRandomTrack();
         sfx.play();
     });
 
-    // Change music when difficulty changes
+    // Pag nagpalit ng difficulty: ihinto ang music, para sa bagong level ang susunod na song
     document.querySelectorAll('input[name="difficulty"]').forEach(function (radio) {
         radio.addEventListener("change", function () {
             currentDifficulty = getSelectedDifficulty();
             currentTrackIndex = 0;
 
-            musicStarted = false;
-            pauseMusic();
+            music.pause();
+            music.removeAttribute("src");
+            music.load();
+            musicState = "stopped";
+            resumeAfterPause = false;
+            updateMusicButtons();
         });
+    });
+
+    // ♫ = play / pause
+    musicBtn.addEventListener("click", function () {
+        resumeAfterPause = false;
+
+        if (musicState === "playing") {
+            music.pause();
+            musicState = "paused";
+            autoStart = false;
+        } else {
+            autoStart = true;
+
+            if (music.getAttribute("src")) {
+                musicState = "playing";            // ituloy kung saan huminto
+                music.play().catch(function () {});
+            } else {
+                startRandomTrack();
+            }
+        }
+        updateMusicButtons();
+    });
+
+    // ■ = stop, balik sa simula ng song
+    stopBtn.addEventListener("click", function () {
+        music.pause();
+        if (music.getAttribute("src")) music.currentTime = 0;
+        musicState = "stopped";
+        autoStart = false;
+        resumeAfterPause = false;
+        updateMusicButtons();
+    });
+
+    // » = next song
+    nextBtn.addEventListener("click", function () {
+        autoStart = true;
+        resumeAfterPause = false;
+
+        if (music.getAttribute("src")) {
+            nextMusicTrack();
+        } else {
+            startRandomTrack();
+        }
     });
 
     document.getElementById("freeze-button").addEventListener("click", sfx.freeze);
@@ -184,46 +278,7 @@ var FlipSound = (function () {
         sfxBtn.setAttribute("aria-pressed", sfxOn);
     });
 
-    // Music button: only the music
-    var musicBtn = document.getElementById("music-button");
-
-    musicBtn.addEventListener("pointerdown", function (event) {
-        if (event.button !== 0) return;
-
-        longPressTriggered = false;
-
-        pressTimer = setTimeout(function () {
-            longPressTriggered = true;
-
-            musicOn = !musicOn;
-            musicBtn.classList.toggle("is-off", !musicOn);
-            musicBtn.setAttribute("aria-pressed", musicOn);
-
-            if (musicOn) {
-                playMusic();
-            } else {
-                pauseMusic();
-            }
-        }, 2000);
-    });
-
-    musicBtn.addEventListener("pointerup", function () {
-        clearTimeout(pressTimer);
-
-        if (!longPressTriggered) {
-            nextMusicTrack();
-        }
-    });
-
-    musicBtn.addEventListener("pointercancel", function () {
-        clearTimeout(pressTimer);
-    });
-
-    musicBtn.addEventListener("contextmenu", function (event) {
-        event.preventDefault();
-    });
-
-    //  5. watching the game 
+    //  5. watching the game
 
     // a) card flipped: play when a card gets the "is-flipped" class
     var cardWatcher = new MutationObserver(function (changes) {
@@ -241,24 +296,37 @@ var FlipSound = (function () {
 
     // b) match / wrong / win / lose: play from the message under the board
     var msg = document.getElementById("game-message");
+    var lastText = "";
+    var lastTime = 0;
     var msgWatcher = new MutationObserver(function () {
         var text = msg.textContent;
+        var now = Date.now();
+
+        // iwas double sound kapag dalawang file ang nag-set ng parehong message
+        if (text === lastText && now - lastTime < 300) return;
+        lastText = text;
+        lastTime = now;
+
         if (text === "Match!") {
             sfx.match();
         } else if (text === "No match...") {
             sfx.wrong();
         } else if (text.indexOf("You win") === 0) {
+            stopGameMusic();
             sfx.win();
         } else if (text === "Time is up!") {
-            sfx.lose();
+         stopGameMusic();
+        sfx.lose();
         }
     });
     msgWatcher.observe(msg, { childList: true, characterData: true, subtree: true });
 
+    updateMusicButtons();
+
     //  6. GAMIT NG PAUSE.JS
     return {
         pauseMusic: pauseMusic,
-        resumeMusic: playMusic
+        resumeMusic: resumeMusic
     };
 
 })();

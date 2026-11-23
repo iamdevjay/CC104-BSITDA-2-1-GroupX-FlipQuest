@@ -21,10 +21,14 @@
             <p>Flip two cards, find the match.</p>
         </div>
 
-        <div class="top-buttons">
-            <button class="small-button" id="music-button" type="button" aria-label="Music" aria-pressed="true">♫</button>
-            <button class="small-button" id="sound-button" type="button" aria-label="Sound effects" aria-pressed="true">SFX</button>
-            <button class="small-button" id="settings-button" type="button" aria-label="Pause">❚❚</button>
+       <div class="top-buttons">
+         <div class="music-controls" role="group" aria-label="Music">
+             <button class="music-btn" id="music-button" type="button" aria-label="Play or pause music" aria-pressed="true" title="Pause music">♫</button>
+              <button class="music-btn" id="stop-button" type="button" aria-label="Stop music" title="Stop music">■</button>
+             <button class="music-btn" id="next-button" type="button" aria-label="Next song" title="Next song">»</button>
+         </div>
+             <button class="small-button" id="sound-button" type="button" aria-label="Sound effects" aria-pressed="true">SFX</button>
+              <button class="small-button" id="settings-button" type="button" aria-label="Pause">❚❚</button>
         </div>
     </header>
 
@@ -184,6 +188,7 @@
 <script src="js/game.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/timer.js"></script>
+<script src="js/feedback.js"></script>
 <script src="js/support.js"></script>
 
 </body>

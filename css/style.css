@@ -546,3 +546,47 @@ label[for="hard"]::after   { content: "12 pairs"; }
     background: var(--ink);
     transform: rotate(-45deg);
 }
+
+/* ---------- MUSIC PLAYER BUTTONS ---------- */
+.music-controls {
+    display: flex;
+    background: var(--lcd-3);
+    border: 3px solid var(--ink);
+    border-radius: 10px;
+    box-shadow: 0 3px 0 var(--ink);
+    overflow: hidden;
+}
+
+.music-btn {
+    position: relative;
+    width: 34px;
+    height: 32px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--lcd-0);
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+.music-btn + .music-btn { border-left: 3px solid var(--ink); }
+.music-btn:hover { background: var(--lcd-2); }
+.music-btn:active { background: var(--lcd-0); color: var(--lcd-3); }
+
+/* ♫ gets a line through it when the music is paused or stopped */
+.music-btn.is-off { opacity: .6; }
+.music-btn.is-off::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 50%;
+    height: 3px;
+    background: var(--lcd-0);
+    transform: rotate(-45deg);
+}
+
+@media (max-width: 480px) {
+    .music-btn { width: 28px; height: 28px; font-size: .85rem; }
+}
