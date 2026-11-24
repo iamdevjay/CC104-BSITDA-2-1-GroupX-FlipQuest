@@ -3,13 +3,13 @@
 (function () {   
 
     var paused = false;
-    var waiting = [];        // flip-backs that finished while we were paused
+    var waiting = [];        // flip backs muna card habang naka paused
     var openTimeouts = {};  
     var realSetInterval = window.setInterval;
     var realSetTimeout = window.setTimeout;
     var realClearTimeout = window.clearTimeout;
 
-    // ---- 1. respect the pause ----
+    //  1. respect the pause 
 
     // setInterval: while paused)
     window.setInterval = function (fn, delay) {
@@ -39,7 +39,7 @@
         return id;
     };
 
-    // ---- 2. grab the things on the page ----
+    //  2. grab the things on the page 
     var overlay = document.getElementById("pause-overlay");
     var gameBox = document.querySelector(".game-container");
     var settingsBtn = document.getElementById("settings-button");
@@ -47,11 +47,12 @@
     var restartBtn = document.getElementById("restart-button");
     var playBtn = document.getElementById("play-button");
 
-    // ---- 3. pause, resume, restart ----
+    //  3. pause, resume, restart 
 
     function pauseGame() {
         if (paused) return;
         paused = true;
+        FlipSound.pauseMusic(); 
         overlay.hidden = false;
         gameBox.inert = true;   // block lahat ng pipindutin
         resumeBtn.focus();
@@ -60,6 +61,7 @@
     function resumeGame() {
         if (!paused) return;
         paused = false;
+        FlipSound.resumeMusic(); 
         overlay.hidden = true;
         gameBox.inert = false;
         settingsBtn.focus();
@@ -91,7 +93,7 @@
         playBtn.click();
     }
 
-    // ---- 4. hook up the buttons ----
+    //  4. hook up the buttons 
     settingsBtn.addEventListener("click", pauseGame);
     resumeBtn.addEventListener("click", resumeGame);
     restartBtn.addEventListener("click", restartGame);

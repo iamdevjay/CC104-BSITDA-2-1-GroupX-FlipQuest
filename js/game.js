@@ -78,6 +78,56 @@ var hideCardsTimer;
 var selectedHintCard = null;
 var hintUsed = false;
 var hintActive = false;
+
+// ====== ROAST AT COMBO MESSAGES ======
+// gusto mo dagdagan? dagdagan mo lang yung mga list dito
+
+var matchLines = ["Match!", "Tama!", "Ayos!", "Bullseye!"];
+
+var roastLines = [
+    "Ay, sayang!",
+    "Ex mo ba yan? Kasi nakalimutan mo agad.",
+    "Memory mo ba yan o RAM ng 2008?",
+    "Bes, hindi 'yan 'yon.",
+    "Buffering pa ba ang utak mo?",
+    "Hindi 'yan pair, 'yan ay sitwasyonship.",
+    "Konti na lang... charot, malayo pa.",
+    "Naalala mo pa ba kung nasaan ang tsinelas mo?",
+    "Susuko ka na ba porket di mo mahanap ang ka pares mo?"
+];
+
+var comboLines = {
+    2: ["Gising na ang utak!", "Uy, may laman pala ang ulo!"],
+    3: ["Sino ka? Si Dr. Strange?", "Hindi na 'to swerte, ha."],
+    4: ["Photographic memory ba 'yan?!", "Bawal na yan, i-report na kita!"]
+};
+
+var lastLine = "";
+
+// pick a random line, pero same sa last line para di maulit
+function pickLine(lines) {
+    var line;
+    do {
+        line = lines[Math.floor(Math.random() * lines.length)];
+    } while (line === lastLine && lines.length > 1);
+    lastLine = line;
+    return line;
+}
+
+// x2 = unang combo message, x3 = pangalawa, x4 
+function getComboMessage(comboCount) {
+    if (comboCount < 2) return pickLine(matchLines);
+
+    var tier = comboCount >= 4 ? 4 : comboCount;
+    return "x" + comboCount + " combo! " + pickLine(comboLines[tier]);
+}
+
+// ipakita ang message + sabihan ang sounds.js kung "match" o "wrong" ito
+function showFeedback(kind, text) {
+    $("#game-message").attr("data-kind", kind).text(text);
+}
+
+
 var hintTimer = null;
 
 
@@ -259,7 +309,7 @@ function handleCardClick(index)
         combo++;
         $("#matched-pairs").text(correct);
         $("#combo").text("x" + combo);
-        $("#game-message").text("Match!");
+        showFeedback("match", getComboMessage(combo));
 
         firstCard = null;
 
@@ -275,7 +325,7 @@ function handleCardClick(index)
         //here combo
         combo = 0;
         $("#combo").text("x" + combo);
-        $("#game-message").text("No match...");
+        showFeedback("wrong", pickLine(roastLines));    // <- FIX: roast na ito, hindi na match
 
         var cardToTurnBack = firstCard;
         firstCard = null;
@@ -289,13 +339,11 @@ function handleCardClick(index)
             canClick = true;
             hideCardsTimer = null;
 
-            $("#game-message").text("Find all the matching pairs!");
+            // <- FIX: tinanggal ko dito yung "Find all the matching pairs!" para hindi mabura ang roast
 
         }, 800);
     }
 }
-
-
 
 
 

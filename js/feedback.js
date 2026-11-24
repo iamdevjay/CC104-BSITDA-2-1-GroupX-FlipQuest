@@ -24,6 +24,10 @@ function ensureFeedbackStyles() {
         .stat-box h2.stat-updated {
             animation: feedbackPulse 0.25s ease-out;
         }
+        #time-limit.time-low {
+    color: #ff0000;
+    animation: feedbackPulse 1s ease-out infinite;
+}
         @keyframes feedbackPulse {
             0% { transform: scale(1.06); }
             100% { transform: scale(1); }
@@ -64,6 +68,11 @@ function ensureFeedbackStyles() {
             font-weight: 600;
             margin-bottom: 14px;
             color: var(--lcd-1, #306230);
+        }
+        #feedback-result-best {
+            min-height: 1.2em;
+            margin: -6px 0 12px;
+            font-weight: 700;
         }
         #feedback-result-stats {
             display: grid;
@@ -144,6 +153,7 @@ function ensureResultModal() {
             <div id="feedback-result-card">
                 <h2 id="feedback-result-title"></h2>
                 <p id="feedback-result-subtitle"></p>
+                <p id="feedback-result-best"></p>
                 <div id="feedback-result-stats">
                     <div><span>Moves</span><strong id="feedback-stat-moves">0</strong></div>
                     <div><span>Combo</span><strong id="feedback-stat-combo">x0</strong></div>
@@ -228,6 +238,28 @@ function getCurrentGameStats() {
     };
 }
 
+// saves the fewest moves for each level (Easy, Medium, Hard have their own record)
+function saveBestMoves(finalMoves) {
+    const level = $('input[name="difficulty"]:checked').val() || 'easy';
+    const key = 'flipquest-best-' + level;
+
+    try {
+        const oldBest = parseInt(localStorage.getItem(key), 10);
+
+        if (isNaN(oldBest)) {
+            localStorage.setItem(key, finalMoves);
+            return 'First record saved!';
+        }
+        if (finalMoves < oldBest) {
+            localStorage.setItem(key, finalMoves);
+            return `New best! (was ${oldBest})`;
+        }
+        return `Best: ${oldBest} moves`;
+    } catch (e) {
+        return '';
+    }
+}
+
 function openGameResultWindow(type, subtitleText) {
     ensureFeedbackStyles();
     ensureResultModal();
@@ -243,7 +275,15 @@ function openGameResultWindow(type, subtitleText) {
     $('#feedback-stat-combo').text(`x${stats.combo}`);
     $('#feedback-stat-pairs').text(`${stats.matchedPairs}/${stats.totalPairs}`);
 
+    const alreadyOpen = $('#feedback-result-modal').hasClass('is-open');
+
+    // only check the best score the first time the window opens
+    if (!alreadyOpen) {
+        $('#feedback-result-best').text(isWin ? saveBestMoves(stats.moves) : '');
+    }
+
     $('#feedback-result-modal').addClass('is-open');
+    $('#feedback-play-again-btn').trigger('focus');
 }
 
 function closeGameResultWindow() {
@@ -315,6 +355,7 @@ function attachFeedbackHooks() {
         const originalStartGame = startGame;
         startGame = function (difficulty) {
             closeGameResultWindow();
+            $('#timer, #time-limit').removeClass('time-low');
             const result = originalStartGame.apply(this, arguments);
             updateStatsDisplay(getCurrentGameStats());
             setTimeout(function () {
@@ -336,17 +377,18 @@ function attachFeedbackHooks() {
 
             updateStatsDisplay(getCurrentGameStats());
 
-            if (nextMatched >= (typeof gameMode !== 'undefined' ? gameMode : 6)) {
+            const totalPairs = typeof gameMode !== 'undefined' ? gameMode : 6;
+
+            // the win is already handled by the endGame hook below
+            if (nextMatched >= totalPairs) {
+                return result;
+            }
+
+             // game.js na ang nagse-set ng message (roast / combo),
+            // kaya pulse animation na lang ang gagawin dito, hindi na papalitan ang text
+            if (nextMoves > prevMoves) {
                 setTimeout(function () {
-                    showGameResult('victory');
-                }, 0);
-            } else if (nextMatched > prevMatched) {
-                setTimeout(function () {
-                    showGameMessage('Match found!');
-                }, 0);
-            } else if (nextMoves > prevMoves) {
-                setTimeout(function () {
-                    showGameMessage('No match...');
+                    pulseElement($('#game-message'));
                 }, 0);
             }
 
@@ -360,6 +402,7 @@ function attachFeedbackHooks() {
         endGame = function (reason) {
             const result = originalEndGame.apply(this, arguments);
             updateStatsDisplay(getCurrentGameStats());
+            $('#timer').removeClass('time-low');
             setTimeout(function () {
                 if (reason === 'win') {
                     showGameResult('victory');
@@ -380,10 +423,10 @@ $(function () {
     attachFeedbackHooks();
     updateStatsDisplay(getCurrentGameStats());
 
-    let previousMessageBeforeHover = '';
     let isHoveringPowerUp = false;
     let $activeHoverButton = null;
 
+    // power-up hover: only the tooltip shows, the game message is left alone
     ['#freeze-button', '#hint-button', '#peek-button'].forEach(function (selector) {
         const $btn = $(selector);
         if (!$btn.length) return;
@@ -392,14 +435,8 @@ $(function () {
             const desc = getPowerUpDescription(selector);
             if (!desc) return;
 
-            if (!isHoveringPowerUp) {
-                previousMessageBeforeHover = $('#game-message').text();
-            }
-
             isHoveringPowerUp = true;
             $activeHoverButton = $btn;
-
-            showGameMessage(desc);
 
             const $tip = $('#feedback-power-tooltip').text(desc).addClass('is-visible');
             positionPowerTooltip($btn);
@@ -411,12 +448,6 @@ $(function () {
                 isHoveringPowerUp = false;
                 $activeHoverButton = null;
                 $('#feedback-power-tooltip').removeClass('is-visible');
-
-                if (previousMessageBeforeHover) {
-                    showGameMessage(previousMessageBeforeHover);
-                } else {
-                    clearGameMessage();
-                }
             }
         });
     });
@@ -434,8 +465,15 @@ $(function () {
 
         if (noCardSelected) {
             setTimeout(function () {
-                showGameMessage('you need to select a card before using a hint skill');
+                showGameMessage('Pick a card first, then press Hint.');
             }, 0);
+
+            // put the normal message back after 2 seconds
+            setTimeout(function () {
+                if ($('#game-message').text() === 'Pick a card first, then press Hint.') {
+                    showGameMessage('Find all the matching pairs!');
+                }
+            }, 2000);
         }
     });
 
@@ -447,5 +485,35 @@ $(function () {
         setTimeout(function () {
             showGameMessage('Difficulty changed. Press Play to start a new game.');
         }, 0);
+    });
+
+    
+   // Warning kapag 10 seconds or less na lang ang limit
+const limitEl = document.getElementById('time-limit');
+
+if (limitEl) {
+
+    new MutationObserver(function () {
+
+        const seconds = Number(limitEl.textContent);
+
+        $('#time-limit').toggleClass(
+            'time-low',
+            gameStarted && seconds > 0 && seconds <= 10
+        );
+
+    }).observe(limitEl, {
+        childList: true,
+        characterData: true,
+        subtree: true
+    });
+
+}
+
+    // Esc closes the result window
+    $(document).on('keydown.feedback', function (e) {
+        if (e.key === 'Escape' && $('#feedback-result-modal').hasClass('is-open')) {
+            closeGameResultWindow();
+        }
     });
 });
