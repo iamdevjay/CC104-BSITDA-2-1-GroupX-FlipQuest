@@ -384,14 +384,11 @@ function attachFeedbackHooks() {
                 return result;
             }
 
-            if (nextMatched > prevMatched) {
-                const comboNow = typeof combo !== 'undefined' ? combo : 0;
+             // game.js na ang nagse-set ng message (roast / combo),
+            // kaya pulse animation na lang ang gagawin dito, hindi na papalitan ang text
+            if (nextMoves > prevMoves) {
                 setTimeout(function () {
-                    showGameMessage(comboNow >= 2 ? `Combo x${comboNow}! Keep going!` : 'Match found!');
-                }, 0);
-            } else if (nextMoves > prevMoves) {
-                setTimeout(function () {
-                    showGameMessage('No match...');
+                    pulseElement($('#game-message'));
                 }, 0);
             }
 

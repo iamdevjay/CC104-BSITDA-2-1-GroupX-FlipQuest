@@ -298,8 +298,10 @@ function stopGameMusic() {
     var msg = document.getElementById("game-message");
     var lastText = "";
     var lastTime = 0;
-    var msgWatcher = new MutationObserver(function () {
+        var msgWatcher = new MutationObserver(function () {
         var text = msg.textContent;
+        var kind = msg.getAttribute("data-kind");   // sinasabi ng game.js kung match o wrong
+        msg.removeAttribute("data-kind");
         var now = Date.now();
 
         // iwas double sound kapag dalawang file ang nag-set ng parehong message
@@ -307,16 +309,15 @@ function stopGameMusic() {
         lastText = text;
         lastTime = now;
 
-        if (text === "Match!") {
-            sfx.match();
-        } else if (text === "No match...") {
-            sfx.wrong();
-        } else if (text.indexOf("You win") === 0) {
-            stopGameMusic();
+        // win at lose muna ang chine-check, kasi sila ang nagpapatong sa "match" message
+        if (text.indexOf("You win") === 0) {
             sfx.win();
         } else if (text === "Time is up!") {
-         stopGameMusic();
-        sfx.lose();
+            sfx.lose();
+        } else if (kind === "match") {
+            sfx.match();
+        } else if (kind === "wrong") {
+            sfx.wrong();
         }
     });
     msgWatcher.observe(msg, { childList: true, characterData: true, subtree: true });
